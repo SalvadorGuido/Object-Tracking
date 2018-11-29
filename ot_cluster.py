@@ -28,29 +28,6 @@ import pandas as pd
 import pathlib
 
 
-class BinarySearchTree:
-
-    def __init__(self):
-        self.root = None
-        self.size = 0
-
-    def length(self):
-        return self.size
-
-    def __len__(self):
-        return self.size
-
-    def __iter__(self):
-        return self.root.__iter__()
-
-class Nodes(object): 
-    def __init__(self,key): 
-        self.left = None
-        self.right = None
-        self.val = key 
-    def __str__(self):
-        return "Node:(key, left, right) "+str(self.val)+":"+str(self.left)+":"+str(self.right)
-
 class Cluster(object):
 	"""docstring for Cluster"""
 	def __init__(self):
