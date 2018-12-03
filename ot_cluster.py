@@ -26,9 +26,16 @@ iBestAssocObj:
 import csv
 import pandas as pd
 import pathlib
+import numpy as np
+import math as mt
 
+DISX = 2
+DISTY = 3
+RRATE = 4
+RANGLE = .45
 
 class Cluster(object):
+	PI = np.pi 
 	"""docstring for Cluster"""
 	def __init__(self):
 		self.f_DistX = None
@@ -44,10 +51,36 @@ class Cluster(object):
 		self.s_RSPCluIdx = None  
 		self.s_NumAssocObjs = None  
 		self.iBestAssocObj = None  
-	def set_attribute(self, newdx, newdy, newrrate):
+		self.e_Vx = None
+		self.e_Vy = None
+		self.e_Ax = None
+		self.e_Ay = None
+		self.e_Vrelx = None
+		self.e_Vrely = None
+		self.e_Arelx = None
+		self.e_Arely = None
+	def set_attribute(self, newdx, newdy, newrrate, newangle):
 		self.f_DistX = newdx
 		self.f_DistY = newdy
 		self.f_RangeRate = newrrate
+		self.f_Angle = newangle
+	def eval_kinematics(self):
+		rvector = mt.sqrt(self.f_DistX**2 + self.f_DistY**2)
+		print("X^2:" + str(self.f_DistX**2))
+		print("Y^2:" + str(self.f_DistY**2))
+		#print("9^1/2:" + np.square(9))
+		print("rvector:" + str(rvector))
+		foor = self.f_DistX/f_CosAngle
+		print("foorvector:" + str(foor))
+
+		gama = 180/self.PI - self.f_Angle# 180 - theta = 180 - 
+		self.e_Vrelx = -rvector*self.f_DistX*np.sin(gama)
+		self.e_Vrely = rvector*self.f_DistY*np.cos(gama)
+		self.e_Arelx = self.f_DistX
+		self.e_Arely = self.f_DistY
+	def get_kinematics(self):
+		print("Cluster Kinematics(vx, vy, ax, ay):" + str(self.e_Vrelx) + "::" + str(self.e_Vrely) + "::" + str(self.e_Arelx) + "::" + str(self.e_Arely))
+
 	def __str__(self):
 		return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
 
@@ -88,3 +121,7 @@ class SampleClusters(object):
 a = Cluster()
 print(a)
 
+a.set_attribute(DISX,DISTY,RRATE,RANGLE)
+print(a)
+a.eval_kinematics()
+a.get_kinematics()
