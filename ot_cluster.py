@@ -33,6 +33,8 @@ DISX = 2
 DISTY = 3
 RRATE = 4
 RANGLE = .45
+ListTrackedObjects = 0
+ListClusters = 0
 
 class Cluster(object):
 	PI = np.pi 
@@ -42,13 +44,13 @@ class Cluster(object):
 		self.f_DistY = None
 		self.f_RangeRate = None 
 		self.f_RCS = None 
-		self.f_Pdh0 = None 
+	#	self.f_Pdh0 = None 
 		self.f_Angle = None  
 		self.f_SinAngle = None 
 		self.f_CosAngle = None 
-		self.u_InvalidReasonBitField = None  
-		self.u_PropertiesBitField = None  
-		self.s_RSPCluIdx = None  
+	#	self.u_InvalidReasonBitField = None  
+	#	self.u_PropertiesBitField = None  
+	#	self.s_RSPCluIdx = None  
 		self.s_NumAssocObjs = None  
 		self.iBestAssocObj = None  
 		self.e_Vx = None
@@ -57,8 +59,8 @@ class Cluster(object):
 		self.e_Ay = None
 		self.e_Vrelx = None
 		self.e_Vrely = None
-		self.e_Arelx = None
-		self.e_Arely = None
+	#	self.e_Arelx = None
+	#	self.e_Arely = None
 	def set_attribute(self, newdx, newdy, newrrate, newangle):
 		self.f_DistX = newdx
 		self.f_DistY = newdy
@@ -99,16 +101,18 @@ class TrackedObject(object):
 	def __init__(self):
 		#super(TrackedObject, self).__init__()
 
-		self.x = None
-		self.y = None
-		self.Vx = None
-		self.Vy = None
-		self.Vrel = None
-		self.ax = None
-		self.ay = None
-		self.listObjects = None
+		self.Xo = None
+		self.Yo = None
+		self.Vox = None
+		self.Voy = None
+		self.Vrelx = None
+		self.Vrely = None
+		self.Aox = None
+		self.Aoy = None
+		self.ClustersPerObject = None
 		self.probExist = None
 		self.probGhost = None
+		self.ObjectID = None
 
 class SampleClusters(object):
 	"""docstring for SampleClusters"""
@@ -117,6 +121,32 @@ class SampleClusters(object):
 		self.listofClusters = None
 		self.validClustersPerSample = None
 		self.egoInfo = None
+
+
+def ReadData():
+	return None
+
+def CreateClusters():
+	return None
+
+def FilterClusters():
+	return None
+
+def CreateObjects():
+	return None
+
+def MergeObjects():
+	return None
+
+def TrackingObjects():
+	return None
+
+def GraphicalInterface():
+	return None
+
+
+
+
 
 a = Cluster()
 print(a)
