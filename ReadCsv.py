@@ -104,13 +104,13 @@ def get_egoLeftInfoCluster(sample):
     EgoSpeed= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]
     EgoVx= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'][sample]
     EgoVy= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'][sample]
-    return (EgoSpeed,EgoVx,EgoVy)
+    return (EgoVx,EgoVy,EgoSpeed)
 
 def get_egoRightInfoCluster(sample):
     EgoSpeed= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]
     EgoVx= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'][sample]
     EgoVy= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'][sample]
-    return (EgoSpeed,EgoVx,EgoVy)
+    return (EgoVx,EgoVy,EgoSpeed)
 
 
 # In[27]:
