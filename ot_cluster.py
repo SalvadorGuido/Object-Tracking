@@ -39,22 +39,22 @@ import pathlib
 import numpy as np
 import math as mt
 
-DISX = 2
-DISTY = 3
-RRATE = 4
-RANGLE = .45
-ListTrackedObjects = 0
-ListClusters = 0
+# DISX = 2
+# DISTY = 3
+# RRATE = 4
+# RANGLE = .45
+# ListTrackedObjects = 0
+# ListClusters = 0
 
 
 class Ego(object):
 	"""docstring for Ego"""
-	def __init__(self, esssx, esssy, escb):
+	def __init__(self):
 	# def __init__(self):
 		#super(Ego, self).__init__()
-		self.f_EgoSpeedSensorSpeedX = esssx
-		self.f_EgoSpeedSensorSpeedY = esssy
-		self.f_EgoSpeedClusterBased = escb
+		self.f_EgoSpeedSensorSpeedX = None
+		self.f_EgoSpeedSensorSpeedY = None
+		self.f_EgoSpeedClusterBased = None
 		self.f_StaClsThrshld = None
 		self.f_AmbClsThrshld = None
 		self.f_DynClsThrshld = None
@@ -62,15 +62,15 @@ class Ego(object):
 		# self.f_EgoSpeedSensorSpeedY = None
 		# self.f_EgoSpeedClusterBased = None
 
-	def set_EgoSpeeds(n_esssx, n_esssy, n_escb):
+	def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb):
 		self.f_EgoSpeedSensorSpeedX = n_esssx
 		self.f_EgoSpeedSensorSpeedY = n_esssy
 		self.f_EgoSpeedClusterBased = n_escb
 
 	def eval_thresholds(self):
-		self.f_StaClsThrshld = np.interp(self.f_EgoSpeedClusterBased,[0.00, 1.50], [0.10, 1.00])
-		self.f_AmbClsThrshld = np.interp(self.f_EgoSpeedClusterBased,[0.00, 1.50], [0.25, 0.50])
-		self.f_DynClsThrshld = np.interp(self.f_EgoSpeedClusterBased,[0.00, 1.50], [0.38, 1.75])
+		self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
+		self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 0.50])
+		self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
 
 class Cluster(object):
@@ -96,16 +96,16 @@ class Cluster(object):
 		self.f_Vabsx = None
 		self.f_Vabsy = None
 
-	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle):
+	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte):
 		self.f_DistX = newdx
 		self.f_DistY = newdy
 		self.f_RangeRate = newrrate
 		self.f_Angle = newangle
 		self.f_SinAngle = newsinangle
 		self.f_CosAngle = newconangle 
-		self.u_InvalidReasonBitField = None
-		self.u_PropertiesBitField = None
-		self.f_RSP_RangeRate = None
+		self.u_InvalidReasonBitField = newIRBField
+		self.u_PropertiesBitField = newPBField
+		self.f_RSP_RangeRate = newRSPRRte
 
 	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
 		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
@@ -196,35 +196,35 @@ class SampleClusters(object):
 		
 
 
-def FunctionReadData():
-	return None
+# def FunctionReadData():
+# 	return None
 
-def FunctionCreateClusters():
-	return None
+# def FunctionCreateClusters():
+# 	return None
 
-def FunctionFilterClusters():
-	return None
+# def FunctionFilterClusters():
+# 	return None
 
-def FunctionCreateObjects():
-	return None
+# def FunctionCreateObjects():
+# 	return None
 
-def FunctionMergeObjects():
-	return None
+# def FunctionMergeObjects():
+# 	return None
 
-def FunctionTrackingObjects():
-	return None
+# def FunctionTrackingObjects():
+# 	return None
 
-def FunctionGraphicalInterface():
-	return None
-
-
+# def FunctionGraphicalInterface():
+# 	return None
 
 
 
-a = Cluster()
-print(a)
 
-a.set_attributes(DISX,DISTY,RRATE,RANGLE)
-print(a)
+
+# a = Cluster()
+# print(a)
+
+# a.set_attributes(DISX,DISTY,RRATE,RANGLE)
+# print(a)
 # a.eval_kinematics()
 # a.get_kinematics()
