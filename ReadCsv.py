@@ -4,16 +4,15 @@
 # In[2]:
 
 
-import numpy as np
 import pandas as pd
+
 path="D:\Continental\AEP2018\T11.1c_LH_25_DEG_2018.06.27_at_20.53.27_radar-mi_1160_Long.csv" 
 radarInfo=pd.read_csv(path)
-
-
 # In[18]:
 
 
-#Listing headers of main table.
+#Listing headers of main table
+
 headers=radarInfo.columns
 
 indexLeftRawDataSensor=headers.get_loc('LEFT SENSOR.DataProcCycle.EM_ClusterList.u_TimeStamp')
@@ -67,6 +66,7 @@ indexLeftRSPDataSensor=rspLSheaders.get_loc('LEFT SENSOR.DataProcCycle.RSP2_Clus
 indexRightRSPDataSensor=rspRSheaders.get_loc('RIGHT SENSOR.DataProcCycle.RSP2_ClusterListNS.a_Clusters[0].f_RangeRad')
 
 
+
 # In[19]:
 
 
@@ -115,10 +115,11 @@ def get_egoRightInfoCluster(sample):
 
 # In[27]:
 
-
+"""
 print (get_nofValidClusters(2))
 print (get_RightInfoCluster(0,1))
 print (get_LeftInfoCluster(0,1))
 print (get_egoLeftInfoCluster(4))
 print (get_egoRightInfoCluster(2))
 
+"""
