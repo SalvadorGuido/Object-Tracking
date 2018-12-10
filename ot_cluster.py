@@ -75,6 +75,8 @@ class Ego(object):
 
 class Cluster(object):
 	PI = np.pi 
+	EM_CLU_VALID = 0
+	EM_CLU_HRR_SCAN_BIT = 16
 	"""docstring for Cluster"""
 	def __init__(self):
 		self.f_DistX = None
@@ -92,6 +94,7 @@ class Cluster(object):
 		self.f_VradIdeal = None
 		self.f_AbsRangeRateDelta = None
 		self.f_ObjectPriority = None
+		self.s_ValidObjectID = None
 		self.f_RCS = None
 		self.f_Vrelx = None
 		self.f_Vrely = None
