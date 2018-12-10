@@ -2,10 +2,9 @@
 # coding: utf-8
 
 # In[2]:
+#%%
 
-
-import ReadCsv 
-
+import ReadCsv
 
 # In[3]:
 
@@ -15,8 +14,6 @@ import ot_cluster
 
 # In[4]:
 
-
-sample = 100
 def FunctionReadData():
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
@@ -62,7 +59,7 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-sample=100
+sample=120
 
 egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
 egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
@@ -84,5 +81,5 @@ valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
 valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
 a=len (valLeftClusters)
 for i in range (a):
-    print(valRightClusters[i].f_ObjectPriority)
+    print(valRightClusters[i].s_ValidObjectID)
 
