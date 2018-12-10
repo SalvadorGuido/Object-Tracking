@@ -129,6 +129,7 @@ class Cluster(object):
 		self.f_Vabsy = self.f_Vrely
 
 	def eval_asnewobject(self):
+		self.f_ObjectPriority = 0
 		if (0 == self.s_NumAssocObjs) and (EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
 			self.s_ValidObjectID = 'True'
 		else: 
