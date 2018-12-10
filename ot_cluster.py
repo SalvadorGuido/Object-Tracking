@@ -97,7 +97,7 @@ class Cluster(object):
 		self.f_Vabsx = None
 		self.f_Vabsy = None
 
-	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte):
+	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS):
 		self.f_DistX = newdx
 		self.f_DistY = newdy
 		self.f_RangeRate = newrrate
@@ -107,6 +107,7 @@ class Cluster(object):
 		self.u_InvalidReasonBitField = newIRBField
 		self.u_PropertiesBitField = newPBField
 		self.f_RSP_RangeRad = newRSPRRte
+		self.f_RCS= newRCS
 
 	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
 		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
