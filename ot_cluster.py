@@ -69,7 +69,7 @@ class Ego(object):
 
 	def eval_thresholds(self):
 		self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
-		self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 0.50])
+		self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
 		self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
 
@@ -109,11 +109,11 @@ class Cluster(object):
 
 	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
 		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
-		self.f_AbsRangeRateDelta = np.absolute(self.f_RangeRate - self.f_VradIdeal)
-		if self.f_AbsRangeRateDelta < StcThrhld:
-			if self.f_AbsRangeRateDelta > AmbThrhld:
+		self.f_AbsRangeRateDelta = abs(self.f_RangeRate - self.f_VradIdeal)
+		if self.f_AbsRangeRateDelta < AmbThrhld:
+			if self.f_AbsRangeRateDelta > StcThrhld:
 				self.s_ClusterKinematicID = 'Static-Ambig'
-			self.s_ClusterKinematicID = 'Static'
+			else: self.s_ClusterKinematicID = 'Static'
 		elif self.f_AbsRangeRateDelta > DynThrhld:
 			self.s_ClusterKinematicID = 'Dynamic'
 		elif self.f_AbsRangeRateDelta > AmbThrhld:
