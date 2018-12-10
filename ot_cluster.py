@@ -85,12 +85,13 @@ class Cluster(object):
 		self.f_CosAngle = None 
 		self.u_InvalidReasonBitField = None
 		self.u_PropertiesBitField = None
-		self.f_RSP_RangeRate = None
+		self.f_RSP_RangeRad = None
 		self.s_NumAssocObjs = None  
 		self.iBestAssocObj = None  
 		self.s_ClusterKinematicID = None # {'Static','Static-Ambig', 'Ambig', 'Dynamic'}
 		self.f_VradIdeal = None
 		self.f_AbsRangeRateDelta = None
+		self.f_RCS = None
 		self.f_Vrelx = None
 		self.f_Vrely = None
 		self.f_Vabsx = None
@@ -105,7 +106,7 @@ class Cluster(object):
 		self.f_CosAngle = newconangle 
 		self.u_InvalidReasonBitField = newIRBField
 		self.u_PropertiesBitField = newPBField
-		self.f_RSP_RangeRate = newRSPRRte
+		self.f_RSP_RangeRad = newRSPRRte
 
 	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
 		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
@@ -126,20 +127,20 @@ class Cluster(object):
 		self.f_Vabsx = self.f_Vrelx + egospeed
 		self.f_Vabsy = self.f_Vrely
 
-
-
-		rvector = mt.sqrt(self.f_DistX**2 + self.f_DistY**2)
-		# print("X^2:" + str(self.f_DistX**2))
-		# print("Y^2:" + str(self.f_DistY**2))
-		# #print("9^1/2:" + np.square(9))
-		# print("rvector:" + str(rvector))
-		foor = self.f_DistX/self.f_CosAngle
-		# print("foorvector:" + str(foor))
-		gama = 180/self.PI - self.f_Angle# 180 - theta = 180 - 
-		self.f_Vrelx = -rvector*self.f_DistX*np.sin(gama)
-		self.f_Vrely = rvector*self.f_DistY*np.cos(gama)
-		self.f_Arelx = self.f_DistX
-		self.f_Arely = self.f_DistY
+	def eval_asnewobject(self):
+		if (0 == self.s_NumAssocObjs) and (EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
+			self.s_ValidObjectID = 'True'
+		else: 
+			self.s_ValidObjectID = 'False'
+		self.f_ObjectPriority += np.interp(self.f_RSP_RangeRad, [10.0, 100.0], [33.0, 0.0])
+		self.f_ObjectPriority += np.interp(self.f_RCS, [-40.0, 00.0], [00.0, 33.0])
+		self.f_ObjectPriority += np.interp(self.f_RangeRate, [-10.0, 5.0], [33.0, 0.0])
+		if self.f_RangeRate <-0.0001:
+			fTTC = 	-self.f_RSP_RangeRad/self.f_RangeRate
+			self.f_ObjectPriority += np.interp(fTTC, [0.0, 5.0], [5.0, 0.0])
+		if self.f_ObjectPriority > 90:
+			self.f_ObjectPriority = 90
+		return self.s_ValidObjectID, self.f_ObjectPriority
 
 	def get_kinematics(self):
 		print("Cluster Kinematics(vx, vy, ax, ay):" + str(self.e_Vrelx) + "::" + str(self.e_Vrely) + "::" + str(self.e_Arelx) + "::" + str(self.e_Arely))
