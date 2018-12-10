@@ -91,6 +91,7 @@ class Cluster(object):
 		self.s_ClusterKinematicID = None # {'Static','Static-Ambig', 'Ambig', 'Dynamic'}
 		self.f_VradIdeal = None
 		self.f_AbsRangeRateDelta = None
+		self.f_ObjectPriority = None
 		self.f_RCS = None
 		self.f_Vrelx = None
 		self.f_Vrely = None
