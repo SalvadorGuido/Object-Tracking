@@ -100,7 +100,7 @@ class Cluster(object):
 		self.f_Vabsx = None
 		self.f_Vabsy = None
 
-	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte):
+	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS):
 		self.f_DistX = newdx
 		self.f_DistY = newdy
 		self.f_RangeRate = newrrate
@@ -110,6 +110,7 @@ class Cluster(object):
 		self.u_InvalidReasonBitField = newIRBField
 		self.u_PropertiesBitField = newPBField
 		self.f_RSP_RangeRad = newRSPRRte
+		self.f_RCS = newRCS
 
 	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
 		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
@@ -170,9 +171,6 @@ class TrackedObject(object):
         self.f_DistX = None
         self.f_DistY = None
         self.f_RangeRate = None
-        self.f_Angle = None
-        self.f_SinAngle = None
-        self.f_CosAngle = None 
         self.f_Vrelx = None
         self.f_Vrely = None
         self.f_Vabsx = None
@@ -183,6 +181,7 @@ class TrackedObject(object):
         self.i_ObjectID = None
         self.f_Priority = None
     def set_createobject(self):
+
         pass
     def set_mergeobjects(self):
         pass
@@ -200,6 +199,7 @@ class SampleClusters(object):
         self.validClustersPerSample = None
         self.listofValidClusters = None
         
+
 
 
 # def FunctionReadData():
