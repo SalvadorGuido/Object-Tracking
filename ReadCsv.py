@@ -6,8 +6,8 @@
 
 import pandas as pd
 
-#path="D:\Continental\AEP2018\T11.1c_LH_25_DEG_2018.06.27_at_20.53.27_radar-mi_1160_Long.csv" 
-path='/home/eln/Documents/Continental/AEP2018/AlgorithmsProject/radarKalman/T11radar.csv' 
+path="D:\Continental\AEP2018\T11.1c_LH_25_DEG_2018.06.27_at_20.53.27_radar-mi_1160_Long.csv" 
+#path='/home/eln/Documents/Continental/AEP2018/AlgorithmsProject/radarKalman/T11radar.csv' 
 radarInfo=pd.read_csv(path)
 # In[18]:
 
@@ -86,8 +86,9 @@ def get_LeftInfoCluster(cluster, sample):
     cosA = rawLSensorValidData[rawLSheaders[(cluster*13)+9]][sample]
     IRBfield= rawLSensorValidData[rawLSheaders[(cluster*13)+10]][sample]
     PBField= rawLSensorValidData[rawLSheaders[(cluster*13)+11]][sample]
+    RCS= rawLSensorValidData[rawLSheaders[(cluster*13)+5]][sample]
     rspRangeRad=rspLSensorValidData[rspLSheaders[indexLeftRSPDataSensor+(cluster*24)]][sample]
-    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad)
+    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS)
 
 def get_RightInfoCluster(cluster, sample):
     dx = rawRSensorValidData[rawRSheaders[(cluster*13)+2]][sample]
@@ -98,8 +99,9 @@ def get_RightInfoCluster(cluster, sample):
     cosA = rawRSensorValidData[rawRSheaders[(cluster*13)+9]][sample]
     IRBfield= rawRSensorValidData[rawRSheaders[(cluster*13)+10]][sample]
     PBField= rawRSensorValidData[rawRSheaders[(cluster*13)+11]][sample]
+    RCS= rawRSensorValidData[rawRSheaders[(cluster*13)+5]][sample]
     rspRangeRad=rspRSensorValidData[rspRSheaders[indexRightRSPDataSensor+(cluster*24)]][sample]
-    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad)
+    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS)
 
 def get_egoLeftInfoCluster(sample):
     EgoSpeed= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]

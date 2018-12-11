@@ -7,7 +7,7 @@ Created on Thu Nov 29 10:28:07 2018
 
 
 class Ego() contains relevant attributes for ego
-	
+    
 f_EgoSpeedSensorSpeedX : x component of speed vector measured by ego sensor
 f_EgoSpeedSensorSpeedY : y component of speed vector measured by ego sensor
 f_EgoSpeedClusterBased : magnitud of speed vector evaluated by cluster
@@ -48,29 +48,29 @@ import math as mt
 
 
 class Ego(object):
-	"""docstring for Ego"""
-	def __init__(self):
-	# def __init__(self):
-		#super(Ego, self).__init__()
-		self.f_EgoSpeedSensorSpeedX = None
-		self.f_EgoSpeedSensorSpeedY = None
-		self.f_EgoSpeedClusterBased = None
-		self.f_StaClsThrshld = None
-		self.f_AmbClsThrshld = None
-		self.f_DynClsThrshld = None
-		# self.f_EgoSpeedSensorSpeedX = None
-		# self.f_EgoSpeedSensorSpeedY = None
-		# self.f_EgoSpeedClusterBased = None
+    """docstring for Ego"""
+    def __init__(self):
+    # def __init__(self):
+        #super(Ego, self).__init__()
+        self.f_EgoSpeedSensorSpeedX = None
+        self.f_EgoSpeedSensorSpeedY = None
+        self.f_EgoSpeedClusterBased = None
+        self.f_StaClsThrshld = None
+        self.f_AmbClsThrshld = None
+        self.f_DynClsThrshld = None
+        # self.f_EgoSpeedSensorSpeedX = None
+        # self.f_EgoSpeedSensorSpeedY = None
+        # self.f_EgoSpeedClusterBased = None
 
-	def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb):
-		self.f_EgoSpeedSensorSpeedX = n_esssx
-		self.f_EgoSpeedSensorSpeedY = n_esssy
-		self.f_EgoSpeedClusterBased = n_escb
+    def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb):
+        self.f_EgoSpeedSensorSpeedX = n_esssx
+        self.f_EgoSpeedSensorSpeedY = n_esssy
+        self.f_EgoSpeedClusterBased = n_escb
 
-	def eval_thresholds(self):
-		self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
-		self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
-		self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
+    def eval_thresholds(self):
+        self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
+        self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
+        self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
 class Cluster(object):
 	PI = np.pi 
@@ -154,74 +154,74 @@ class Cluster(object):
 		return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
 
 class TrackedObject(object):
-	"""docstring for TrackedObject"""
+    """docstring for TrackedObject"""
 
 # class Missile(object):
 #   MAX_SPEED = 100  # all missiles accelerate up to this speed
 #   ACCELERATION = 5  # rate of acceleration per game frame
 
-#   	def move(self):
-#     	self.speed += self.ACCELERATION
-#     	if self.speed > self.MAX_SPEED:
-#       		self.speed = self.MAX_SPEED
+#       def move(self):
+#         self.speed += self.ACCELERATION
+#         if self.speed > self.MAX_SPEED:
+#               self.speed = self.MAX_SPEED
     
-	def __init__(self):
-		#super(TrackedObject, self).__init__()
-		self.f_DistX = None
-		self.f_DistY = None
-		self.f_RangeRate = None
-		self.f_Angle = None
-		self.f_SinAngle = None
-		self.f_CosAngle = None 
-		self.f_Vrelx = None
-		self.f_Vrely = None
-		self.f_Vabsx = None
-		self.f_Vabsy = None
-		self.i_ClustersPerObject = None
-		self.f_probExist = None
-		self.f_probGhost = None
-		self.i_ObjectID = None
-		self.f_Priority = None
-	def set_createobject(self):
-		pass
-	def set_mergeobjects(self):
-		pass
+    def __init__(self):
+        #super(TrackedObject, self).__init__()
+        self.f_DistX = None
+        self.f_DistY = None
+        self.f_RangeRate = None
+        self.f_Angle = None
+        self.f_SinAngle = None
+        self.f_CosAngle = None 
+        self.f_Vrelx = None
+        self.f_Vrely = None
+        self.f_Vabsx = None
+        self.f_Vabsy = None
+        self.i_ClustersPerObject = None
+        self.f_probExist = None
+        self.f_probGhost = None
+        self.i_ObjectID = None
+        self.f_Priority = None
+    def set_createobject(self):
+        pass
+    def set_mergeobjects(self):
+        pass
 class TrakedObjects(object):
-	"""docstring for TrakedObjects"""
-	def __init__(self):
-		#super(TrakedObjects, self).__init__()
-		self.l_40TrakedObjects = None
-		
+    """docstring for TrakedObjects"""
+    def __init__(self):
+        #super(TrakedObjects, self).__init__()
+        self.l_40TrakedObjects = None
+        
 
 class SampleClusters(object):
-	"""docstring for SampleClusters"""
-	def __init__(self):
-		#super(SampleClusters, self).__init__()
-		self.validClustersPerSample = None
-		self.listofValidClusters = None
-		
+    """docstring for SampleClusters"""
+    def __init__(self):
+        #super(SampleClusters, self).__init__()
+        self.validClustersPerSample = None
+        self.listofValidClusters = None
+        
 
 
 # def FunctionReadData():
-# 	return None
+#     return None
 
 # def FunctionCreateClusters():
-# 	return None
+#     return None
 
 # def FunctionFilterClusters():
-# 	return None
+#     return None
 
 # def FunctionCreateObjects():
-# 	return None
+#     return None
 
 # def FunctionMergeObjects():
-# 	return None
+#     return None
 
 # def FunctionTrackingObjects():
-# 	return None
+#     return None
 
 # def FunctionGraphicalInterface():
-# 	return None
+#     return None
 
 
 
