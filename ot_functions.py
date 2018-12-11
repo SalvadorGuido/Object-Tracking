@@ -29,7 +29,8 @@ def FunctionCreateClusters(egoRinfo, egoLinfo):
         cR.set_filtercluster(egoRinfo.f_EgoSpeedSensorSpeedX,egoRinfo.f_EgoSpeedSensorSpeedY, egoRinfo.f_StaClsThrshld,egoRinfo.f_DynClsThrshld, egoRinfo.f_AmbClsThrshld)
         cR.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)
         cR.eval_asnewobject()
-        validRClusters.append(cR) 
+        validRClusters.append(cR)
+        
     for clusL in range(vClus[1]):
         cL=ot_cluster.Cluster()
         cLinfo=ReadCsv.get_LeftInfoCluster(clusL,sample)
@@ -59,27 +60,28 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-sample=120
+for sample in range(10):
 
-egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
-egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
-
-egoRInfo=ot_cluster.Ego()
-egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2])
-
-egoLInfo=ot_cluster.Ego()
-egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2])
-
-egoRInfo.eval_thresholds()
-egoLInfo.eval_thresholds()
-
-
-# In[9]:
-
-
-valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
-valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
-a=len (valLeftClusters)
-for i in range (a):
-    print(valRightClusters[i].s_ValidObjectID)
+    egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
+    egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
+    
+    egoRInfo=ot_cluster.Ego()
+    egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2])
+    
+    egoLInfo=ot_cluster.Ego()
+    egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2])
+    
+    egoRInfo.eval_thresholds()
+    egoLInfo.eval_thresholds()
+    
+    
+    # In[9]:
+    
+    
+    valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
+    valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
+    a=len (valRightClusters)
+    for i in range (a):
+        if valRightClusters[i].s_ValidObjectID== 'True' :
+            print(valRightClusters[i].s_ValidObjectID)
 
