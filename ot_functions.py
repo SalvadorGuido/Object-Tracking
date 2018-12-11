@@ -46,22 +46,26 @@ def FunctionFilterClusters():
     return None
 
 def FunctionCreateObjects(valLeftClusters, valRightClusters):
-
+    
+#    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
     R_ValidClustersObjects=[]
     L_nvalidclusters=len(valLeftClusters)
     R_nvalidclusters=len(valRightClusters)
+    
+    for i in range (L_nvalidclusters):
+        if valLeftClusters[i].s_ValidObjectID == 'True':
+            L_ValidClustersObjects.append(valLeftClusters[i])
+            
 
     for i in range (R_nvalidclusters):
         if valRightClusters[i].s_ValidObjectID == 'True':
             R_ValidClustersObjects.append(valRightClusters[i])
-
-    for i in range (L_nvalidclusters):
-        if valLeftClusters[i].s_ValidObjectID == 'True':
-            L_ValidClustersObjects.append(valLeftClusters[i])
-
-    R_ValidClustersObjects.sort()
-    L_ValidClustersObjects.sort()
+            
+    L_ValidClustersObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+    R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
+    #print(R_ValidClustersObjects[1].f_ObjectPriority)
+    #print(L_ValidClustersObjects[1].f_ObjectPriority)
     
     return L_ValidClustersObjects, R_ValidClustersObjects
 
@@ -78,8 +82,10 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-for sample in range(10):
+for sample in range(2000):
 
+ #   sample = 200
+    
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
     
@@ -91,15 +97,34 @@ for sample in range(10):
     
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
+    valLeftClusters  = FunctionCreateClusters(egoRInfo, egoLInfo)[1]
+    valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
+    [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
+    for i in range (len(sorteda)):
+        #print("###############################################")
+        print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
+        
+    for i in range (len(sortedb)):
+        #print("+++++++++++++++++++++++++++++++++++++++++++++++")
+        print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
+
+
 
 
     # In[9]:
     
     
-    valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
-    valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
-    a=len (valRightClusters)
-    for i in range (a):
-        if valRightClusters[i].s_ValidObjectID== 'True' :
-            print(valRightClusters[i].s_ValidObjectID)
+# valLeftClusters  = FunctionCreateClusters(egoRInfoi egoLInfo)[1]
+# valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
+[valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
 
+a=len (valRightClusters)
+for i in range (a):
+    if valRightClusters[i].s_ValidObjectID == 'True':
+        print(valRightClusters[i].s_ValidObjectID)
+
+
+a=len (valLeftClusters)
+for i in range (a):
+    if valLeftClusters[i].s_ValidObjectID == 'True':
+        print(valLeftClusters[i].s_ValidObjectID)
