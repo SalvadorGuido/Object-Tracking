@@ -14,12 +14,12 @@ import ot_cluster
 
 # In[4]:
 
-def FunctionReadData():
+def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
 
-def FunctionCreateClusters(egoRinfo, egoLinfo):
-    vClus=FunctionReadData()
+def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
+    vClus=FunctionReadData(sample)
     validRClusters=[]
     validLClusters=[]
     for clusR in range(vClus[0]):
@@ -97,8 +97,10 @@ for sample in range(2000):
     
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
-    valLeftClusters  = FunctionCreateClusters(egoRInfo, egoLInfo)[1]
-    valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
+
+    valLeftClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[1]
+    valRightClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[0]
+    
     [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     for i in range (len(sorteda)):
         #print("###############################################")
@@ -107,9 +109,6 @@ for sample in range(2000):
     for i in range (len(sortedb)):
         #print("+++++++++++++++++++++++++++++++++++++++++++++++")
         print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
-
-
-
 
     # In[9]:
     
@@ -122,7 +121,6 @@ a=len (valRightClusters)
 for i in range (a):
     if valRightClusters[i].s_ValidObjectID == 'True':
         print(valRightClusters[i].s_ValidObjectID)
-
 
 a=len (valLeftClusters)
 for i in range (a):
