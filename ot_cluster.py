@@ -72,11 +72,10 @@ class Ego(object):
 		self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
 		self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
-
 class Cluster(object):
 	PI = np.pi 
 	EM_CLU_VALID = 0
-	EM_CLU_HRR_SCAN_BIT = 16
+	EM_CLU_HRR_SCAN_BIT = 32
 	"""docstring for Cluster"""
 	def __init__(self):
 		self.f_DistX = None
@@ -133,7 +132,8 @@ class Cluster(object):
 
 	def eval_asnewobject(self):
 		self.f_ObjectPriority = 0
-		if (0 == self.s_NumAssocObjs) and (EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
+		self.s_NumAssocObjs = 0
+		if (0 == self.s_NumAssocObjs) and (self.EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (self.EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
 			self.s_ValidObjectID = 'True'
 		else: 
 			self.s_ValidObjectID = 'False'
