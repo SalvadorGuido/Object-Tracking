@@ -41,11 +41,29 @@ def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
         validLClusters.append(cL)   
     return validRClusters,validLClusters
 
+
 def FunctionFilterClusters():
     return None
 
-def FunctionCreateObjects():
-    return None
+def FunctionCreateObjects(valLeftClusters, valRightClusters):
+
+    L_ValidClustersObjects=[]
+    R_ValidClustersObjects=[]
+    L_nvalidclusters=len(valLeftClusters)
+    R_nvalidclusters=len(valRightClusters)
+
+    for i in range (R_nvalidclusters):
+        if valRightClusters[i].s_ValidObjectID == 'True':
+            R_ValidClustersObjects.append(valRightClusters[i])
+
+    for i in range (L_nvalidclusters):
+        if valLeftClusters[i].s_ValidObjectID == 'True':
+            L_ValidClustersObjects.append(valLeftClusters[i])
+
+    R_ValidClustersObjects.sort()
+    L_ValidClustersObjects.sort()
+    
+    return L_ValidClustersObjects, R_ValidClustersObjects
 
 def FunctionMergeObjects():
     return None
