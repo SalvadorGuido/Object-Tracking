@@ -14,12 +14,12 @@ import ot_cluster
 
 # In[4]:
 
-def FunctionReadData():
+def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
 
-def FunctionCreateClusters(egoRinfo, egoLinfo):
-    vClus=FunctionReadData()
+def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
+    vClus=FunctionReadData(sample)
     validRClusters=[]
     validLClusters=[]
     for clusR in range(vClus[0]):
@@ -60,7 +60,7 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-for sample in range(10):
+for sample in range(20):
 
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
@@ -73,13 +73,9 @@ for sample in range(10):
     
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
-    
-    
-    # In[9]:
-    
-    
-    valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
-    valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
+       
+    valLeftClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[1]
+    valRightClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[0]
     a=len (valRightClusters)
     for i in range (a):
         if valRightClusters[i].s_ValidObjectID== 'True' :
