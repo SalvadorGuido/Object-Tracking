@@ -46,7 +46,7 @@ import math as mt
 # ListTrackedObjects = 0
 # ListClusters = 0
 
-
+# In[1]:
 class Ego(object):
     """docstring for Ego"""
     def __init__(self):
@@ -76,6 +76,7 @@ class Ego(object):
         self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
         self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
+# In[2]:
 class Cluster(object):
 	PI = np.pi 
 	EM_CLU_VALID = 0
@@ -158,6 +159,30 @@ class Cluster(object):
 	def __str__(self):
 		return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
 
+# In[3]:
+class TrackedObjects(object):
+    """docstring for TrackedObjects"""
+    TRACKEDCOUNTER = 0
+    MAXTRACKEDOBJECTS = 40
+    def __init__(self):
+        #super(TrackedObjects, self).__init__()
+        self.list_40TrackedObjects = []
+    def set_insertNewObjects(self, newposobj):
+    	n_newobjects = len(newposobj)
+    	if abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER )) >= n_newobjects:
+    		self.TRACKEDCOUNTER += n_newobjects
+    		for i in range(n_newobjects):
+		        newObject=TrackedObject()
+		        newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
+		        # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)		    
+		        self.list_40TrackedObjects.append(newObject)
+		    
+    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+    	else:
+    		self.list_40TrackedObjects.append(newobject)
+    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+
+# In[4]:    
 class TrackedObject(object):
     """docstring for TrackedObject"""
 
@@ -179,23 +204,29 @@ class TrackedObject(object):
         self.f_Vrely = None
         self.f_Vabsx = None
         self.f_Vabsy = None
-        self.i_ClustersPerObject = None
+        self.i_ClustersPerObject = []
         self.f_probExist = None
         self.f_probGhost = None
         self.i_ObjectID = None
         self.f_Priority = None
-    def set_createobject(self):
-
-        pass
+    def set_createobject(self, newdisx, newdisy, newrr, newvrelx, newvrely, newvabsx, newvabsy, newprior):
+    	self.f_DistX = newdisx
+    	self.f_DistY = newdisy
+    	self.f_RangeRate = newrr
+    	self.f_Vrelx = newvrelx
+    	self.f_Vrely = newvrely
+    	self.f_Vabsx = newvabsx
+    	self.f_Vabsy = newvabsy
+    	# self.i_ClustersPerObject = []
+    	# self.f_probExist = None
+    	# self.f_probGhost = None
+    	# self.i_ObjectID = None
+    	self.f_Priority = newprior
+     
     def set_mergeobjects(self):
         pass
-class TrakedObjects(object):
-    """docstring for TrakedObjects"""
-    def __init__(self):
-        #super(TrakedObjects, self).__init__()
-        self.l_40TrakedObjects = None
-        
 
+# In[5]:
 class SampleClusters(object):
     """docstring for SampleClusters"""
     def __init__(self):

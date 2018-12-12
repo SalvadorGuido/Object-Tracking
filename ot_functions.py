@@ -8,7 +8,6 @@ import ReadCsv
 
 # In[3]:
 
-
 import ot_cluster
 
 
@@ -45,7 +44,7 @@ def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
 def FunctionFilterClusters():
     return None
 
-def FunctionCreateObjects(valLeftClusters, valRightClusters):
+def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj):
     
 #    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
@@ -67,6 +66,8 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters):
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
     
+
+
     return L_ValidClustersObjects, R_ValidClustersObjects
 
 def FunctionMergeObjects():
@@ -82,7 +83,11 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
+<<<<<<< HEAD
 for sample in range(200):
+=======
+for sample in range(20):
+>>>>>>> a298a0f6f614df62ad4531170e22a470347b9b15
 
  #   sample = 200
     
@@ -98,16 +103,30 @@ for sample in range(200):
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
+<<<<<<< HEAD
     [valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
     
     [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     for i in range (len(sorteda)):
         #print("###############################################")
         print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
+=======
+    valLeftClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[1]
+    valRightClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[0]
+
+    LeftTrackedObjects = ot_cluster.TrackedObjects()
+    RightTrackedObjects = ot_cluster.TrackedObjects()
+    FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects)
+
+    # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
+    # for i in range (len(sorteda)):
+    #     #print("###############################################")
+    #     print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
+>>>>>>> a298a0f6f614df62ad4531170e22a470347b9b15
         
-    for i in range (len(sortedb)):
-        #print("+++++++++++++++++++++++++++++++++++++++++++++++")
-        print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
+    # for i in range (len(sortedb)):
+    #     #print("+++++++++++++++++++++++++++++++++++++++++++++++")
+    #     print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
 
     # In[9]:
     
