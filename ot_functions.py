@@ -101,14 +101,14 @@ for sample in range(200):
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
-    [valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
+    [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
     LeftTrackedObjects = ot_cluster.TrackedObjects()
     RightTrackedObjects = ot_cluster.TrackedObjects()
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects)
 
-print(LeftTrackedObjects.TRACKEDCOUNTER)
-print(RightTrackedObjects.TRACKEDCOUNTER)
+    print(LeftTrackedObjects.TRACKEDCOUNTER)
+    print(RightTrackedObjects.TRACKEDCOUNTER)
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")

@@ -6,7 +6,7 @@
 
 import pandas as pd
 
-path="D:\Continental\AEP2018\T11.1c_LH_25_DEG_2018.06.27_at_20.53.27_radar-mi_1160_Long.csv" 
+path="C:/Users/eduar/Desktop/radarLongLast.csv" 
 #path='/home/eln/Documents/Continental/AEP2018/AlgorithmsProject/radarKalman/T11radar.csv' 
 radarInfo=pd.read_csv(path)
 # In[18]:
@@ -147,8 +147,7 @@ def get_egoRightInfoCluster(sample):
     LongPos = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPos'][sample]
     LongPosToCoG = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPosToCoG'][sample]
 
-    return (EgoVx,EgoVy,EgoSpeed,,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPos, LongPosToCoG)
-
+    return (EgoVx,EgoVy,EgoSpeed,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPos, LongPosToCoG)
 
 # In[27]:
 
