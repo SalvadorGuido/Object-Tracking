@@ -82,7 +82,7 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-for sample in range(2000):
+for sample in range(200):
 
  #   sample = 200
     
@@ -98,8 +98,7 @@ for sample in range(2000):
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
-    valLeftClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[1]
-    valRightClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[0]
+    [valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
     
     [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     for i in range (len(sorteda)):
@@ -115,7 +114,7 @@ for sample in range(2000):
     
 # valLeftClusters  = FunctionCreateClusters(egoRInfoi egoLInfo)[1]
 # valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
-[valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
+
 
 a=len (valRightClusters)
 for i in range (a):

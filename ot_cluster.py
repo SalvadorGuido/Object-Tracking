@@ -58,14 +58,18 @@ class Ego(object):
         self.f_StaClsThrshld = None
         self.f_AmbClsThrshld = None
         self.f_DynClsThrshld = None
+        self.f_EgoSinYawA = None
+        self.f_EgoCosYawA = None
         # self.f_EgoSpeedSensorSpeedX = None
         # self.f_EgoSpeedSensorSpeedY = None
         # self.f_EgoSpeedClusterBased = None
 
-    def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb):
+    def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb, n_esya, n_ecya):
         self.f_EgoSpeedSensorSpeedX = n_esssx
         self.f_EgoSpeedSensorSpeedY = n_esssy
         self.f_EgoSpeedClusterBased = n_escb
+        self.f_EgoSinYawA = n_esya
+        self.f_EgoCosYawA = n_ecya
 
     def eval_thresholds(self):
         self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
