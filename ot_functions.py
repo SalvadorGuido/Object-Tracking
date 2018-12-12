@@ -85,11 +85,7 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-<<<<<<< HEAD
 for sample in range(200):
-=======
-for sample in range(20):
->>>>>>> a298a0f6f614df62ad4531170e22a470347b9b15
 
  #   sample = 200
     
@@ -97,25 +93,16 @@ for sample in range(20):
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
     
     egoRInfo=ot_cluster.Ego()
-    egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2])
+    egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2],egoInfoRight[3],egoInfoRight[4])
     
     egoLInfo=ot_cluster.Ego()
-    egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2])
+    egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2],egoInfoLeft[3],egoInfoLeft[4])
     
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
-<<<<<<< HEAD
     [valLeftClusters, valRightClusters]  = FunctionCreateClusters(egoRInfo, egoLInfo)
     
-    [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
-    for i in range (len(sorteda)):
-        #print("###############################################")
-        print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
-=======
-    valLeftClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[1]
-    valRightClusters=FunctionCreateClusters(sample, egoRInfo, egoLInfo)[0]
-
     LeftTrackedObjects = ot_cluster.TrackedObjects()
     RightTrackedObjects = ot_cluster.TrackedObjects()
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects)
@@ -126,7 +113,7 @@ print(RightTrackedObjects.TRACKEDCOUNTER)
     # for i in range (len(sorteda)):
     #     #print("###############################################")
     #     print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
->>>>>>> a298a0f6f614df62ad4531170e22a470347b9b15
+
         
     # for i in range (len(sortedb)):
     #     #print("+++++++++++++++++++++++++++++++++++++++++++++++")
