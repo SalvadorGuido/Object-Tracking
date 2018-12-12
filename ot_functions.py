@@ -65,10 +65,12 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
-    
+    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects)
+    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects)
 
 
-    return L_ValidClustersObjects, R_ValidClustersObjects
+    # return L_ValidClustersObjects, R_ValidClustersObjects
+    return l_trackedobj, r_trackedobj
 
 def FunctionMergeObjects():
     return None
@@ -106,6 +108,8 @@ for sample in range(20):
     RightTrackedObjects = ot_cluster.TrackedObjects()
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects)
 
+print(LeftTrackedObjects.TRACKEDCOUNTER)
+print(RightTrackedObjects.TRACKEDCOUNTER)
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")

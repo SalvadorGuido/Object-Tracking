@@ -172,11 +172,14 @@ class TrackedObjects(object):
 		        newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
 		        # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)		    
 		        self.list_40TrackedObjects.append(newObject)
-		    
-    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+
+    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
     	else:
-    		self.list_40TrackedObjects.append(newobject)
-    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+    		self.list_40TrackedObjects.append(newObject)
+    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+    def __str__(self):
+    	return "TrackedObjects:"+str(self.list_40TrackedObjects)
+
 
 # In[4]:    
 class TrackedObject(object):
