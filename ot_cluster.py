@@ -177,24 +177,37 @@ class TrackedObjects(object):
     """docstring for TrackedObjects"""
     TRACKEDCOUNTER = 0
     MAXTRACKEDOBJECTS = 40
+
     def __init__(self):
         #super(TrackedObjects, self).__init__()
         self.list_40TrackedObjects = []
     def set_insertNewObjects(self, newposobj, egoInfo):
         n_newobjects = len(newposobj)
+        # print("in class TrackedObjects no received " + str(n_newobjects))
         if abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER )) >= n_newobjects:
             self.TRACKEDCOUNTER += n_newobjects
             for i in range(n_newobjects):
                 newObject=TrackedObject()
+                # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
                 newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
                     egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                 # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                 self.list_40TrackedObjects.append(newObject)
 
             self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+            # print("Counter in class if true " + str(self.TRACKEDCOUNTER))
         else:
+            for i in range(n_newobjects):
+                newObject=TrackedObject()
+                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
+                # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
+                self.list_40TrackedObjects.append(newObject)
+
             self.list_40TrackedObjects.append(newObject)
             self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+            n_topop = abs(len(self.list_40TrackedObjects)-self.MAXTRACKEDOBJECTS)
+            del self.list_40TrackedObjects[-n_topop:]
+            # print("Counter in class if false " + str(self.TRACKEDCOUNTER))
     def __str__(self):
         return "TrackedObjects:"+str(self.list_40TrackedObjects)
 
@@ -235,6 +248,7 @@ class TrackedObject(object):
         self.i_ObjectID = None
         self.f_Priority = None
         self.f_Kalman= Kalman()
+
     def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior,EgoSpeedClusterBased,EgoAccel, EgoSinYawA, EgoCosYawA, dt,YawRate,MountingCenterX,MountingCenterY):
         self.f_DistX = newdisx
         self.f_DistY = newdisy
