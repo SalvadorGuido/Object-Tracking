@@ -6,7 +6,7 @@
 
 import pandas as pd
 
-path="C:/Users/eduar/Desktop/radarLongLast.csv" 
+path="C:/Users/eduar/Desktop/T11.1c_LH_25_DEG_2018.06.27_at_20.53.27_radar-mi_1160_LongLast_2.csv" 
 #path='/home/eln/Documents/Continental/AEP2018/AlgorithmsProject/radarKalman/T11radar.csv' 
 radarInfo=pd.read_csv(path)
 # In[18]:
@@ -27,12 +27,12 @@ rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobal
 rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'])
 rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'])
 rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'])
-rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fCosYawAngle'])
-rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fSinYawAngle'])
+rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fCosYawAngle'])
+rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fSinYawAngle'])
 rawLSensorData=rawLSensorData.join(radarInfo['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fCycletime'])
 rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Lateral.YawRate.YawRate'])
 rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LatPos'])
-rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPos'])
+rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Longitudinal.MotVar.Accel'])
 rawLSensorData=rawLSensorData.join(radarInfo['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPosToCoG'])
 
 
@@ -41,12 +41,12 @@ rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGloba
 rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'])
 rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'])
 rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'])
-rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fCosYawAngle'])
-rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fSinYawAngle'])
+rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fCosYawAngle'])
+rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fSinYawAngle'])
 rawRSensorData=rawRSensorData.join(radarInfo['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fCycletime'])
 rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Lateral.YawRate.YawRate'])
 rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LatPos'])
-rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPos'])
+rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Longitudinal.MotVar.Accel'])
 rawRSensorData=rawRSensorData.join(radarInfo['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPosToCoG'])
 
 #Listing headers of table of raw information.
@@ -125,29 +125,29 @@ def get_egoLeftInfoCluster(sample):
     EgoSpeed= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]
     EgoVx= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'][sample]
     EgoVy= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'][sample]
-    EgoSinYawA= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fSinYawAngle'][sample]
-    EgoCosYawA= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fCosYawAngle'][sample]
+    EgoSinYawA= rawLSensorValidData['LEFT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fSinYawAngle'][sample]
+    EgoCosYawA= rawLSensorValidData['LEFT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fCosYawAngle'][sample]
     dt = rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fCycletime'][sample]
     YawRate = rawLSensorValidData['LEFT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Lateral.YawRate.YawRate'][sample]
     LatPos = rawLSensorValidData['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LatPos'][sample]
-    LongPos = rawLSensorValidData['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPos'][sample]
+    SigEgoAccel = rawLSensorValidData['LEFT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Longitudinal.MotVar.Accel'][sample]
     LongPosToCoG = rawLSensorValidData['LEFT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPosToCoG'][sample]
 
-    return (EgoVx,EgoVy,EgoSpeed,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPos, LongPosToCoG)
+    return (EgoVx,EgoVy,EgoSpeed,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPosToCoG, SigEgoAccel)
 
 def get_egoRightInfoCluster(sample):
     EgoSpeed= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]
     EgoVx= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedX'][sample]
     EgoVy= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobals.DaPGlobals.fEgoSpeedSensorSpeedY'][sample]
-    EgoSinYawA= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fSinYawAngle'][sample]
-    EgoCosYawA= rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fCosYawAngle'][sample]
+    EgoSinYawA= rawRSensorValidData['RIGHT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fSinYawAngle'][sample]
+    EgoCosYawA= rawRSensorValidData['RIGHT SENSOR.DataProcCycle.EMGlobals.FrameGlobals.fCosYawAngle'][sample]
     dt = rawRSensorValidData['SIM EM RIGHT.DataProcCycle.EMGlobalOutput.fCycletime'][sample]
     YawRate = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Lateral.YawRate.YawRate'][sample]
     LatPos = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LatPos'][sample]
-    LongPos = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPos'][sample]
+    SigEgoAccel = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehDyn_DataProcCycle.Longitudinal.MotVar.Accel'][sample]
     LongPosToCoG = rawRSensorValidData['RIGHT SENSOR.DataProcCycle.VehPar_DataProcCycle.SensorMounting.LongPosToCoG'][sample]
 
-    return (EgoVx,EgoVy,EgoSpeed,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPos, LongPosToCoG)
+    return (EgoVx,EgoVy,EgoSpeed,EgoSinYawA,EgoCosYawA, dt, YawRate, LatPos, LongPosToCoG, SigEgoAccel)
 
 # In[27]:
 

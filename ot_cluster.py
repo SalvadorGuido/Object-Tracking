@@ -55,21 +55,34 @@ class Ego(object):
         self.f_EgoSpeedSensorSpeedX = None
         self.f_EgoSpeedSensorSpeedY = None
         self.f_EgoSpeedClusterBased = None
+        self.f_EgoAccel = None
         self.f_StaClsThrshld = None
         self.f_AmbClsThrshld = None
         self.f_DynClsThrshld = None
         self.f_EgoSinYawA = None
         self.f_EgoCosYawA = None
+        self.dt = None
+        self.YawRate= None
+        self.LatPos = None
+        self.LongPosToCoG = None
+
+
         # self.f_EgoSpeedSensorSpeedX = None
         # self.f_EgoSpeedSensorSpeedY = None
         # self.f_EgoSpeedClusterBased = None
 
-    def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb, n_esya, n_ecya):
+    def set_EgoSpeeds(self,n_esssx, n_esssy, n_escb, n_esya, n_ecya, dt, YawRate, LatPos, LongPosToCoG, SigEgoAccel):
         self.f_EgoSpeedSensorSpeedX = n_esssx
         self.f_EgoSpeedSensorSpeedY = n_esssy
         self.f_EgoSpeedClusterBased = n_escb
         self.f_EgoSinYawA = n_esya
         self.f_EgoCosYawA = n_ecya
+        self.dt = dt
+        self.YawRate= YawRate
+        self.LatPos = LatPos
+        self.LongPosToCoG = LongPosToCoG
+        self.f_EgoAccel = SigEgoAccel
+
 
     def eval_thresholds(self):
         self.f_StaClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.10, 1.00])
