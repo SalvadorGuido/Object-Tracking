@@ -87,12 +87,13 @@ def FunctionGraphicalInterface():
 # In[5]:
 
     
-egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
-egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
-
+LeftTrackedObjects = ot_cluster.TrackedObjects()
+RightTrackedObjects = ot_cluster.TrackedObjects()
 for sample in range(500):
 
  #   sample = 200
+    egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
+    egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
 
     
     egoRInfo=ot_cluster.Ego()
@@ -106,8 +107,7 @@ for sample in range(500):
 
     [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
-    LeftTrackedObjects = ot_cluster.TrackedObjects()
-    RightTrackedObjects = ot_cluster.TrackedObjects()
+
     [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
     print(LeftTrackedObjects.TRACKEDCOUNTER)
