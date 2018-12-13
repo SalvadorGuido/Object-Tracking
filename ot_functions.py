@@ -85,7 +85,7 @@ def FunctionGraphicalInterface():
 # In[5]:
 
 
-for sample in range(200):
+for sample in range(20):
 
  #   sample = 200
     
@@ -110,7 +110,11 @@ for sample in range(200):
     #print(LeftTrackedObjects.TRACKEDCOUNTER)
     #print(RightTrackedObjects.TRACKEDCOUNTER)
 LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-print(LTO.list_40TrackedObjects[0].f_Kalman.A)
+LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
+LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
+LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
+LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+print(LTO.list_40TrackedObjects[0].f_Kalman.P)
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")
