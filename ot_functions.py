@@ -66,7 +66,9 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
     l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
+    # print("in function FunctionCreateObjects ************************left")
     r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
+    # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
 
 
     # return L_ValidClustersObjects, R_ValidClustersObjects
@@ -84,13 +86,14 @@ def FunctionGraphicalInterface():
 
 # In[5]:
 
-
+LeftTrackedObjects = ot_cluster.TrackedObjects()
+RightTrackedObjects = ot_cluster.TrackedObjects()
 for sample in range(20):
 
  #   sample = 200
-    
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
+
     
     egoRInfo=ot_cluster.Ego()
     egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2],egoInfoRight[3],egoInfoRight[4], egoInfoRight[5], egoInfoRight[6], egoInfoRight[7], egoInfoRight[8], egoInfoRight[9])
@@ -103,12 +106,14 @@ for sample in range(20):
 
     [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
-    LeftTrackedObjects = ot_cluster.TrackedObjects()
-    RightTrackedObjects = ot_cluster.TrackedObjects()
+
     [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
-    #print(LeftTrackedObjects.TRACKEDCOUNTER)
-    #print(RightTrackedObjects.TRACKEDCOUNTER)
+    print(LeftTrackedObjects.TRACKEDCOUNTER)
+    print(RightTrackedObjects.TRACKEDCOUNTER)
+    print("sample:" + str(sample))
+    
+    
 LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
 LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
 LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
@@ -132,12 +137,12 @@ print(LTO.list_40TrackedObjects[0].f_Kalman.P)
 # valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
 
 
-a=len (valRightClusters)
-for i in range (a):
-    if valRightClusters[i].s_ValidObjectID == 'True':
-        print(valRightClusters[i].s_ValidObjectID)
+# a=len (valRightClusters)
+# for i in range (a):
+#     if valRightClusters[i].s_ValidObjectID == 'True':
+#         print(valRightClusters[i].s_ValidObjectID)
 
-a=len (valLeftClusters)
-for i in range (a):
-    if valLeftClusters[i].s_ValidObjectID == 'True':
-        print(valLeftClusters[i].s_ValidObjectID)
+# a=len (valLeftClusters)
+# for i in range (a):
+#     if valLeftClusters[i].s_ValidObjectID == 'True':
+#         print(valLeftClusters[i].s_ValidObjectID)
