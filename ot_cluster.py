@@ -38,7 +38,7 @@ import pandas as pd
 import pathlib
 import numpy as np
 import math as mt
-
+from Kalman import *
 # DISX = 2
 # DISTY = 3
 # RRATE = 4
@@ -63,8 +63,8 @@ class Ego(object):
         self.f_EgoCosYawA = None
         self.dt = None
         self.YawRate= None
-        self.LatPos = None
-        self.LongPosToCoG = None
+        self.MountingtoCenterX = None
+        self.MountingtoCenterY = None
 
 
         # self.f_EgoSpeedSensorSpeedX = None
@@ -79,8 +79,8 @@ class Ego(object):
         self.f_EgoCosYawA = n_ecya
         self.dt = dt
         self.YawRate= YawRate
-        self.LatPos = LatPos
-        self.LongPosToCoG = LongPosToCoG
+        self.MountingtoCenterX = LatPos
+        self.MountingtoCenterY = LongPosToCoG
         self.f_EgoAccel = SigEgoAccel
 
 
@@ -91,86 +91,86 @@ class Ego(object):
 
 # In[2]:
 class Cluster(object):
-	PI = np.pi 
-	EM_CLU_VALID = 0
-	EM_CLU_HRR_SCAN_BIT = 32
-	"""docstring for Cluster"""
-	def __init__(self):
-		self.f_DistX = None
-		self.f_DistY = None
-		self.f_RangeRate = None 
-		self.f_Angle = None  
-		self.f_SinAngle = None 
-		self.f_CosAngle = None 
-		self.u_InvalidReasonBitField = None
-		self.u_PropertiesBitField = None
-		self.f_RSP_RangeRad = None
-		self.s_NumAssocObjs = None  
-		self.iBestAssocObj = None  
-		self.s_ClusterKinematicID = None # {'Static','Static-Ambig', 'Ambig', 'Dynamic'}
-		self.f_VradIdeal = None
-		self.f_AbsRangeRateDelta = None
-		self.f_ObjectPriority = None
-		self.s_ValidObjectID = None
-		self.f_RCS = None
-		self.f_Vrelx = None
-		self.f_Vrely = None
-		self.f_Vabsx = None
-		self.f_Vabsy = None
+    PI = np.pi 
+    EM_CLU_VALID = 0
+    EM_CLU_HRR_SCAN_BIT = 32
+    """docstring for Cluster"""
+    def __init__(self):
+        self.f_DistX = None
+        self.f_DistY = None
+        self.f_RangeRate = None 
+        self.f_Angle = None  
+        self.f_SinAngle = None 
+        self.f_CosAngle = None 
+        self.u_InvalidReasonBitField = None
+        self.u_PropertiesBitField = None
+        self.f_RSP_RangeRad = None
+        self.s_NumAssocObjs = None  
+        self.iBestAssocObj = None  
+        self.s_ClusterKinematicID = None # {'Static','Static-Ambig', 'Ambig', 'Dynamic'}
+        self.f_VradIdeal = None
+        self.f_AbsRangeRateDelta = None
+        self.f_ObjectPriority = None
+        self.s_ValidObjectID = None
+        self.f_RCS = None
+        self.f_Vrelx = None
+        self.f_Vrely = None
+        self.f_Vabsx = None
+        self.f_Vabsy = None
 
-	def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS):
-		self.f_DistX = newdx
-		self.f_DistY = newdy
-		self.f_RangeRate = newrrate
-		self.f_Angle = newangle
-		self.f_SinAngle = newsinangle
-		self.f_CosAngle = newconangle 
-		self.u_InvalidReasonBitField = newIRBField
-		self.u_PropertiesBitField = newPBField
-		self.f_RSP_RangeRad = newRSPRRte
-		self.f_RCS = newRCS
+    def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS):
+        self.f_DistX = newdx
+        self.f_DistY = newdy
+        self.f_RangeRate = newrrate
+        self.f_Angle = newangle
+        self.f_SinAngle = newsinangle
+        self.f_CosAngle = newconangle 
+        self.u_InvalidReasonBitField = newIRBField
+        self.u_PropertiesBitField = newPBField
+        self.f_RSP_RangeRad = newRSPRRte
+        self.f_RCS = newRCS
 
-	def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
-		self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
-		self.f_AbsRangeRateDelta = abs(self.f_RangeRate - self.f_VradIdeal)
-		if self.f_AbsRangeRateDelta < AmbThrhld:
-			if self.f_AbsRangeRateDelta > StcThrhld:
-				self.s_ClusterKinematicID = 'Static-Ambig'
-			else: self.s_ClusterKinematicID = 'Static'
-		elif self.f_AbsRangeRateDelta > DynThrhld:
-			self.s_ClusterKinematicID = 'Dynamic'
-		elif self.f_AbsRangeRateDelta > AmbThrhld:
-			self.s_ClusterKinematicID = 'Ambig'
+    def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
+        self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
+        self.f_AbsRangeRateDelta = abs(self.f_RangeRate - self.f_VradIdeal)
+        if self.f_AbsRangeRateDelta < AmbThrhld:
+            if self.f_AbsRangeRateDelta > StcThrhld:
+                self.s_ClusterKinematicID = 'Static-Ambig'
+            else: self.s_ClusterKinematicID = 'Static'
+        elif self.f_AbsRangeRateDelta > DynThrhld:
+            self.s_ClusterKinematicID = 'Dynamic'
+        elif self.f_AbsRangeRateDelta > AmbThrhld:
+            self.s_ClusterKinematicID = 'Ambig'
 
-			
-	def eval_kinematics(self, egospeed): 
-		self.f_Vrelx = self.f_RangeRate*self.f_CosAngle 
-		self.f_Vrely = self.f_RangeRate*self.f_SinAngle 
-		self.f_Vabsx = self.f_Vrelx + egospeed
-		self.f_Vabsy = self.f_Vrely
+            
+    def eval_kinematics(self, egospeed): 
+        self.f_Vrelx = self.f_RangeRate*self.f_CosAngle 
+        self.f_Vrely = self.f_RangeRate*self.f_SinAngle 
+        self.f_Vabsx = self.f_Vrelx + egospeed
+        self.f_Vabsy = self.f_Vrely
 
-	def eval_asnewobject(self):
-		self.f_ObjectPriority = 0
-		self.s_NumAssocObjs = 0
-		if (0 == self.s_NumAssocObjs) and (self.EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (self.EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
-			self.s_ValidObjectID = 'True'
-		else: 
-			self.s_ValidObjectID = 'False'
-		self.f_ObjectPriority += np.interp(self.f_RSP_RangeRad, [10.0, 100.0], [33.0, 0.0])
-		self.f_ObjectPriority += np.interp(self.f_RCS, [-40.0, 00.0], [00.0, 33.0])
-		self.f_ObjectPriority += np.interp(self.f_RangeRate, [-10.0, 5.0], [33.0, 0.0])
-		if self.f_RangeRate <-0.0001:
-			fTTC = 	-self.f_RSP_RangeRad/self.f_RangeRate
-			self.f_ObjectPriority += np.interp(fTTC, [0.0, 5.0], [5.0, 0.0])
-		if self.f_ObjectPriority > 90:
-			self.f_ObjectPriority = 90
-		return self.s_ValidObjectID, self.f_ObjectPriority
+    def eval_asnewobject(self):
+        self.f_ObjectPriority = 0
+        self.s_NumAssocObjs = 0
+        if (0 == self.s_NumAssocObjs) and (self.EM_CLU_VALID == self.u_InvalidReasonBitField) and (self.s_ClusterKinematicID == 'Dynamic') and (self.EM_CLU_HRR_SCAN_BIT != self.u_PropertiesBitField):
+            self.s_ValidObjectID = 'True'
+        else: 
+            self.s_ValidObjectID = 'False'
+        self.f_ObjectPriority += np.interp(self.f_RSP_RangeRad, [10.0, 100.0], [33.0, 0.0])
+        self.f_ObjectPriority += np.interp(self.f_RCS, [-40.0, 00.0], [00.0, 33.0])
+        self.f_ObjectPriority += np.interp(self.f_RangeRate, [-10.0, 5.0], [33.0, 0.0])
+        if self.f_RangeRate <-0.0001:
+            fTTC =     -self.f_RSP_RangeRad/self.f_RangeRate
+            self.f_ObjectPriority += np.interp(fTTC, [0.0, 5.0], [5.0, 0.0])
+        if self.f_ObjectPriority > 90:
+            self.f_ObjectPriority = 90
+        return self.s_ValidObjectID, self.f_ObjectPriority
 
-	def get_kinematics(self):
-		print("Cluster Kinematics(vx, vy, ax, ay):" + str(self.e_Vrelx) + "::" + str(self.e_Vrely) + "::" + str(self.e_Arelx) + "::" + str(self.e_Arely))
+    def get_kinematics(self):
+        print("Cluster Kinematics(vx, vy, ax, ay):" + str(self.e_Vrelx) + "::" + str(self.e_Vrely) + "::" + str(self.e_Arelx) + "::" + str(self.e_Arely))
 
-	def __str__(self):
-		return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
+    def __str__(self):
+        return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
 
 # In[3]:
 class TrackedObjects(object):
@@ -180,22 +180,23 @@ class TrackedObjects(object):
     def __init__(self):
         #super(TrackedObjects, self).__init__()
         self.list_40TrackedObjects = []
-    def set_insertNewObjects(self, newposobj):
-    	n_newobjects = len(newposobj)
-    	if abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER )) >= n_newobjects:
-    		self.TRACKEDCOUNTER += n_newobjects
-    		for i in range(n_newobjects):
-		        newObject=TrackedObject()
-		        newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-		        # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)		    
-		        self.list_40TrackedObjects.append(newObject)
+    def set_insertNewObjects(self, newposobj, egoInfo):
+        n_newobjects = len(newposobj)
+        if abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER )) >= n_newobjects:
+            self.TRACKEDCOUNTER += n_newobjects
+            for i in range(n_newobjects):
+                newObject=TrackedObject()
+                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
+                self.list_40TrackedObjects.append(newObject)
 
-    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
-    	else:
-    		self.list_40TrackedObjects.append(newObject)
-    		self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+            self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+        else:
+            self.list_40TrackedObjects.append(newObject)
+            self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
     def __str__(self):
-    	return "TrackedObjects:"+str(self.list_40TrackedObjects)
+        return "TrackedObjects:"+str(self.list_40TrackedObjects)
 
 
 # In[4]:    
@@ -215,30 +216,46 @@ class TrackedObject(object):
         #super(TrackedObject, self).__init__()
         self.f_DistX = None
         self.f_DistY = None
-        self.f_RangeRate = None
-        self.f_Vrelx = None
-        self.f_Vrely = None
         self.f_Vabsx = None
         self.f_Vabsy = None
+        self.f_AccelX = None
+        self.f_AccelY = None
+        self.f_EgoSpeedClusterBased= None
+        self.f_EgoAccel = None
+        self.f_EgoSinYawA = None
+        self.f_EgoCosYawA = None
+        self.dt = None
+        self.YawRate= None
+        self.MountingCenterX = None
+        self.MountingCenterY = None
+
         self.i_ClustersPerObject = []
         self.f_probExist = None
         self.f_probGhost = None
         self.i_ObjectID = None
         self.f_Priority = None
-    def set_createobject(self, newdisx, newdisy, newrr, newvrelx, newvrely, newvabsx, newvabsy, newprior):
-    	self.f_DistX = newdisx
-    	self.f_DistY = newdisy
-    	self.f_RangeRate = newrr
-    	self.f_Vrelx = newvrelx
-    	self.f_Vrely = newvrely
-    	self.f_Vabsx = newvabsx
-    	self.f_Vabsy = newvabsy
-    	# self.i_ClustersPerObject = []
-    	# self.f_probExist = None
-    	# self.f_probGhost = None
-    	# self.i_ObjectID = None
-    	self.f_Priority = newprior
-     
+        self.f_Kalman= Kalman()
+    def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior,EgoSpeedClusterBased,EgoAccel, EgoSinYawA, EgoCosYawA, dt,YawRate,MountingCenterX,MountingCenterY):
+        self.f_DistX = newdisx
+        self.f_DistY = newdisy
+        self.f_Vabsx = newvabsx
+        self.f_Vabsy = newvabsy
+        self.f_AccelX = None
+        self.f_AccelY = None
+        self.f_EgoSpeedClusterBased= EgoSpeedClusterBased
+        self.f_EgoAccel = EgoAccel
+        self.f_EgoSinYawA = EgoSinYawA
+        self.f_EgoCosYawA = EgoCosYawA
+        self.dt = dt
+        self.YawRate= YawRate
+        self.MountingCenterX = MountingCenterX
+        self.MountingCenterY = MountingCenterY
+        self.f_Kalman.set_initialKalVal(newdisx, newdisy, newvabsx, newvabsy, dt,YawRate, EgoSinYawA, EgoCosYawA, EgoSpeedClusterBased, MountingCenterX,MountingCenterY, EgoAccel)
+        # self.i_ClustersPerObject = []
+        # self.f_probExist = None
+        # self.f_probGhost = None
+        # self.i_ObjectID = None
+        self.f_Priority = newprior
     def set_mergeobjects(self):
         pass
 

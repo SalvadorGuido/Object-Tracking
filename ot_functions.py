@@ -44,7 +44,7 @@ def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
 def FunctionFilterClusters():
     return None
 
-def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj):
+def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLinfo):
     
 #    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
@@ -65,8 +65,8 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
-    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects)
-    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects)
+    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
+    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
 
 
     # return L_ValidClustersObjects, R_ValidClustersObjects
@@ -105,10 +105,12 @@ for sample in range(200):
     
     LeftTrackedObjects = ot_cluster.TrackedObjects()
     RightTrackedObjects = ot_cluster.TrackedObjects()
-    FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects)
+    [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
-    print(LeftTrackedObjects.TRACKEDCOUNTER)
-    print(RightTrackedObjects.TRACKEDCOUNTER)
+    #print(LeftTrackedObjects.TRACKEDCOUNTER)
+    #print(RightTrackedObjects.TRACKEDCOUNTER)
+LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+print(LTO.list_40TrackedObjects[0].f_Kalman.A)
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")
