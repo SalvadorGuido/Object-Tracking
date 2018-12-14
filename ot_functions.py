@@ -9,10 +9,19 @@ import ReadCsv
 # In[3]:
 
 import ot_cluster
+from time import sleep 
+import os
+
 
 
 # In[4]:
-
+def cls():
+    if os.name=='posix':
+        !clear
+    else:
+        !clc
+     
+    
 def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
@@ -72,8 +81,10 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
     l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
+    l_trackedobj.set_lifecounterup()
     # print("in function FunctionCreateObjects ************************left")
     r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
+    r_trackedobj.set_lifecounterup()
     # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
 
 
@@ -94,8 +105,14 @@ def FunctionGraphicalInterface():
 
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
-for sample in range(20):
 
+CICLES_TO_RUN = 20
+DELAY_IN_S = 0.001
+
+for sample in range(CICLES_TO_RUN):
+    sleep(DELAY_IN_S)
+    cls()
+#    !clear
  #   sample = 200
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
@@ -112,22 +129,37 @@ for sample in range(20):
 
     [valRightClusters, valLeftClusters, dynRClus, dynLClus]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
+
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
-    print(LeftTrackedObjects.TRACKEDCOUNTER)
-    print(RightTrackedObjects.TRACKEDCOUNTER)
     print("sample:" + str(sample))
-    
-    
-LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.Matrix_A_P_Q_H_R_I()
-LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.OldStateVector(5)
-LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.RelativeVelocities()
-LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.AceleratioFramework()
-LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.KalmanFilter_Predict()
-print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.P)
-print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.X)
-print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.x)
-print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.Dt)
+    if len(LeftTrackedObjects.list_40TrackedObjects) > 1:
+        
+        print(LeftTrackedObjects.TRACKEDCOUNTER)
+        print(RightTrackedObjects.TRACKEDCOUNTER)
+
+        print("LeftTrackedObjects kalman :" + str(sample))
+        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
+        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
+        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
+        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+        print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        print("RightTrackedObjects kalman:" + str(sample))
+        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
+        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
+        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
+        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+        print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+
+#
+#LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+#LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
+#LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
+#LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
+#LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+#print(LTO.list_40TrackedObjects[0].f_Kalman.P)
 
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
