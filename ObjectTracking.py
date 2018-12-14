@@ -186,7 +186,6 @@ collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
 #collection = PatchCollection(patches, patch_colors, alpha=0.3)
 
 collection.set_array(np.array(colors))
-#collection.set_array(np.array(patch_colors))
 ax.add_collection(collection)
 
 print(ax)
@@ -243,13 +242,13 @@ for i in range(1,sample):
     print("Colors: ")
     print(patch_colors)
     colors = np.linspace(0, 1, len(patches))
-    #collection = PatchCollection(patches, np.asarray(patch_colors),alpha=0.3)
-    collection.set_array(np.array(patch_colors))
+
 
     collection = PatchCollection(patches, cmap=plt.cm.hsv, alpha=0.3)
     collection.set_array(np.array(colors))
     ax.add_collection(collection)
     plt.pause(4e-4)
+
     #time.sleep(0.1)
     plt.cla()
     patch_colors = []

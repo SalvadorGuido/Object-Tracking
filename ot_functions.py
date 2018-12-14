@@ -2,27 +2,23 @@
 # coding: utf-8
 
 # In[2]:
+#%%
 
-
-import ReadCsv 
-
+import ReadCsv
 
 # In[3]:
-
 
 import ot_cluster
 
 
 # In[4]:
 
-
-sample = 100
-def FunctionReadData():
+def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
 
-def FunctionCreateClusters(egoRinfo, egoLinfo):
-    vClus=FunctionReadData()
+def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
+    vClus=FunctionReadData(sample)
     validRClusters=[]
     validLClusters=[]
     for clusR in range(vClus[0]):
@@ -32,7 +28,8 @@ def FunctionCreateClusters(egoRinfo, egoLinfo):
         cR.set_filtercluster(egoRinfo.f_EgoSpeedSensorSpeedX,egoRinfo.f_EgoSpeedSensorSpeedY, egoRinfo.f_StaClsThrshld,egoRinfo.f_DynClsThrshld, egoRinfo.f_AmbClsThrshld)
         cR.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)
         cR.eval_asnewobject()
-        validRClusters.append(cR) 
+        validRClusters.append(cR)
+        
     for clusL in range(vClus[1]):
         cL=ot_cluster.Cluster()
         cLinfo=ReadCsv.get_LeftInfoCluster(clusL,sample)
@@ -43,11 +40,39 @@ def FunctionCreateClusters(egoRinfo, egoLinfo):
         validLClusters.append(cL)   
     return validRClusters,validLClusters
 
+
 def FunctionFilterClusters():
     return None
 
-def FunctionCreateObjects():
-    return None
+def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLinfo):
+    
+#    print("IN FUNCTION CREATE OBJECTS")
+    L_ValidClustersObjects=[]
+    R_ValidClustersObjects=[]
+    L_nvalidclusters=len(valLeftClusters)
+    R_nvalidclusters=len(valRightClusters)
+    
+    for i in range (L_nvalidclusters):
+        if valLeftClusters[i].s_ValidObjectID == 'True':
+            L_ValidClustersObjects.append(valLeftClusters[i])
+            
+
+    for i in range (R_nvalidclusters):
+        if valRightClusters[i].s_ValidObjectID == 'True':
+            R_ValidClustersObjects.append(valRightClusters[i])
+            
+    L_ValidClustersObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+    R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
+    #print(R_ValidClustersObjects[1].f_ObjectPriority)
+    #print(L_ValidClustersObjects[1].f_ObjectPriority)
+    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
+    # print("in function FunctionCreateObjects ************************left")
+    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
+    # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
+
+
+    # return L_ValidClustersObjects, R_ValidClustersObjects
+    return l_trackedobj, r_trackedobj
 
 def FunctionMergeObjects():
     return None
@@ -61,28 +86,63 @@ def FunctionGraphicalInterface():
 
 # In[5]:
 
+LeftTrackedObjects = ot_cluster.TrackedObjects()
+RightTrackedObjects = ot_cluster.TrackedObjects()
+for sample in range(20):
 
-sample=100
+ #   sample = 200
+    egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
+    egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
 
-egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
-egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
+    
+    egoRInfo=ot_cluster.Ego()
+    egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2],egoInfoRight[3],egoInfoRight[4], egoInfoRight[5], egoInfoRight[6], egoInfoRight[7], egoInfoRight[8], egoInfoRight[9])
+    
+    egoLInfo=ot_cluster.Ego()
+    egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2],egoInfoLeft[3],egoInfoLeft[4], egoInfoLeft[5], egoInfoLeft[6], egoInfoLeft[7] ,egoInfoLeft[8] ,egoInfoLeft[9])
+    
+    egoRInfo.eval_thresholds()
+    egoLInfo.eval_thresholds()
 
-egoRInfo=ot_cluster.Ego()
-egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2])
+    [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
+    
 
-egoLInfo=ot_cluster.Ego()
-egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2])
+    [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
-egoRInfo.eval_thresholds()
-egoLInfo.eval_thresholds()
+    print(LeftTrackedObjects.TRACKEDCOUNTER)
+    print(RightTrackedObjects.TRACKEDCOUNTER)
+    print("sample:" + str(sample))
+    
+    
+LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
+LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
+LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
+LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+print(LTO.list_40TrackedObjects[0].f_Kalman.P)
+    # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
+    # for i in range (len(sorteda)):
+    #     #print("###############################################")
+    #     print("Left objects:" + str(sorteda[i].f_ObjectPriority) + "No of objects " + str(len(sorteda)))
+
+        
+    # for i in range (len(sortedb)):
+    #     #print("+++++++++++++++++++++++++++++++++++++++++++++++")
+    #     print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
+
+    # In[9]:
+    
+    
+# valLeftClusters  = FunctionCreateClusters(egoRInfoi egoLInfo)[1]
+# valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
 
 
-# In[9]:
+# a=len (valRightClusters)
+# for i in range (a):
+#     if valRightClusters[i].s_ValidObjectID == 'True':
+#         print(valRightClusters[i].s_ValidObjectID)
 
-
-valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[1]
-valRightClusters=FunctionCreateClusters(egoRInfo, egoLInfo)[0]
-a=len (valLeftClusters)
-for i in range (a):
-    print(valRightClusters[i].f_ObjectPriority)
-
+# a=len (valLeftClusters)
+# for i in range (a):
+#     if valLeftClusters[i].s_ValidObjectID == 'True':
+#         print(valLeftClusters[i].s_ValidObjectID)
