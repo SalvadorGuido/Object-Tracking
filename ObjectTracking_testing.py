@@ -4,6 +4,7 @@ import matplotlib.path as mpath
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
 from matplotlib.collections import PatchCollection
+from matplotlib.colors import ListedColormap
 import time
 import random
 
@@ -109,16 +110,16 @@ def create_figure(size,pos):
 	# ob_hei = obj_height(size,pos)
 	# ob_wid = obj_width(size, pos)
 	ob_cen = pos
-	ob_hei = 2
-	ob_wid = 2
+	ob_hei = 1
+	ob_wid = 1
 
-	return mpatches.Rectangle(ob_cen, ob_wid, ob_hei,fill = False)
+	return mpatches.Rectangle(ob_cen, ob_wid, ob_hei)
 
 
 
 # In[5]:
 # Number of samples
-sample = 50
+sample = 20
 #sample = 6320
 
 egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
@@ -135,6 +136,7 @@ egoRInfo.eval_thresholds()
 egoLInfo.eval_thresholds()
 
 
+radarOffset = abs(egoRInfo.MountingtoCenterY) + abs(egoLInfo.MountingtoCenterY)
 
 
 # In[6]:
@@ -147,7 +149,8 @@ valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo,0)[0]
 
 fig, ax = plt.subplots()
 patchesL = []
-patchesR = []	
+patchesR = []
+patch_colors = []
 #egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(1)
 
 #egoLInfo=ot_cluster.Ego()
@@ -156,7 +159,7 @@ patchesR = []
 #egoLInfo.eval_thresholds()
 #valLeftClusters=FunctionCreateClusters(egoRInfo, egoLInfo,40)[1]
 
-max_clusters = 383
+max_clusters = 200
 n_clusters = len(valLeftClusters)
     
 for j in range(max_clusters):
@@ -167,9 +170,23 @@ for j in range(max_clusters):
         print(r)
     else:
         temp_tuple = (-valLeftClusters[j].f_DistY,valLeftClusters[j].f_DistX)
-        r = create_figure(5, temp_tuple)
-        patchesL.append(r)
-        print(r)
+        if valLeftClusters[j].s_ClusterKinematicID == "Dynamic":
+            r = create_figure(5, temp_tuple)
+            patchesL.append(r)
+            patch_colors.append("red")
+            print(r)
+        elif valLeftClusters[j].s_ClusterKinematicID == "Static":
+            r = create_figure(5, temp_tuple)
+            patchesL.append(r)
+            patch_colors.append("red")
+        elif valLeftClusters[j].s_ClusterKinematicID == "Ambig":
+            r = create_figure(5, temp_tuple)
+            patchesL.append(r)
+            patch_colors.append("red")
+        elif valLeftClusters[j].s_ClusterKinematicID == "Static-Ambig":
+            r = create_figure(5, temp_tuple)
+            patchesL.append(r)
+            patch_colors.append("red")
 
 n_clusters = len(valRightClusters)
     
@@ -178,36 +195,58 @@ for j in range(max_clusters):
         temp_tuple = (-100,-100)
         r = create_figure(5, temp_tuple)
         patchesR.append(r)
+        patch_colors.append("red")
         print(r)
     else:
         temp_tuple = (-valRightClusters[j].f_DistY,valRightClusters[j].f_DistX)
-        r = create_figure(5, temp_tuple)
-        patchesR.append(r)
-        print(r)
+        if valRightClusters[j].s_ClusterKinematicID == "Dynamic":
+            r = create_figure(5, temp_tuple)
+            patchesR.append(r)
+            patch_colors.append("red")
+            print(r)
+        elif valRightClusters[j].s_ClusterKinematicID == "Static":
+            r = create_figure(5, temp_tuple)
+            patchesR.append(r)
+            patch_colors.append("red")
+            print(r)
+        elif valRightClusters[j].s_ClusterKinematicID == "Ambig":
+            r = create_figure(5, temp_tuple)
+            patchesR.append(r)
+            patch_colors.append("red")
+            print(r)
+        elif valRightClusters[j].s_ClusterKinematicID == "Static-Ambig":
+            r = create_figure(5, temp_tuple)
+            patchesR.append(r)
+            patch_colors.append("red")
+            print(r)
+        else:
+            r = create_figure(5, temp_tuple)
+            patchesR.append(r)
+            patch_colors.append("red")
+            print(r)
+            
 
 
 addedPatch = patchesL + patchesR
-colors = np.linspace(0, 1, len(addedPatch))
-collection = PatchCollection(addedPatch, cmap=plt.cm.hsv, alpha=0.3)
-#collection = PatchCollection(patches, patch_colors, alpha=0.3)
+#colors = np.linspace(0, 1, len(addedPatch))
+#collection = PatchCollection(addedPatch)
 
-collection.set_array(np.array(colors))
+tcmap = ListedColormap(patch_colors)
+
+collection = PatchCollection(addedPatch, cmap=tcmap, alpha=0.3)
+
+#collection.set_array(np.array(colors))
 ax.add_collection(collection)
 
 print(ax)
-# print(ax[0])
 print(collection.get_array())
 
 plt.ion()
-# plt.axis('equal')
 plt.axis('off')
-# plt.tight_layout()
-# plt.plot(1300,5999)
-# plt.plot(1000,1000)
+plt.tight_layout()
 ax.set_xlim(-100, 100)
 ax.set_ylim(-100, 100)
-ax.set_facecolor('xkcd:salmon')
-
+plt.tight_layout()
 plt.show()
 
 
@@ -216,7 +255,6 @@ for i in range(1,sample):
     print("Samples: " + str(sample))
     print("N of CLusters: " +  str(n_clusters))
     print("valLeftClusters: " + str(len((valLeftClusters))))
-    
 
     
     egoRInfo=ot_cluster.Ego()
@@ -245,11 +283,18 @@ for i in range(1,sample):
         if j < n_clusters:
             patchesL[j].set_x(-valLeftClusters[j].f_DistY)
             patchesL[j].set_y(valLeftClusters[j].f_DistX)
-                
-            print(i,j, patchesL[j].get_x(),patchesL[j].get_y())
+            if valLeftClusters[j].s_ClusterKinematicID == "Dynamic":
+                patch_colors.append("red")
+            elif valLeftClusters[j].s_ClusterKinematicID == "Static":
+                patch_colors.append("red")
+            elif valLeftClusters[j].s_ClusterKinematicID == "Ambig":
+                patch_colors.append("red")
+            elif valLeftClusters[j].s_ClusterKinematicID == "Static-Ambig":
+                patch_colors.append("red")
         else:
             patchesL[j].set_x(-100)
             patchesL[j].set_y(-100)
+            patch_colors.append("red")
             print(i,j, patchesL[j].get_x(),patchesL[j].get_y())
             
     n_clusters = len(valRightClusters)
@@ -257,8 +302,16 @@ for i in range(1,sample):
         
     for j in range(1,max_clusters-1):
         if j < n_clusters:
-            patchesR[j].set_x(-valRightClusters[j].f_DistY)
+            patchesR[j].set_x(-valRightClusters[j].f_DistY + radarOffset)
             patchesR[j].set_y(valRightClusters[j].f_DistX)
+            if valRightClusters[j].s_ClusterKinematicID == "Dynamic":
+                patch_colors.append("red")
+            elif valRightClusters[j].s_ClusterKinematicID == "Static":
+                patch_colors.append("red")
+            elif valRightClusters[j].s_ClusterKinematicID == "Ambig":
+                patch_colors.append("red")
+            elif valRightClusters[j].s_ClusterKinematicID == "Static-Ambig":
+                patch_colors.append("red")
                 
             print(i,j, patchesR[j].get_x(),patchesR[j].get_y())
         else:
@@ -268,19 +321,18 @@ for i in range(1,sample):
 
 
     addedPatch = patchesL + patchesR
-    colors = np.linspace(0, 1, len(addedPatch))
-    collection = PatchCollection(addedPatch, cmap=plt.cm.hsv, alpha=0.3)
-    collection.set_array(np.array(colors))
+    #colors = np.linspace(0, 1, len(addedPatch))
+    #collection = PatchCollection(addedPatch)
+    #collection.set_array(np.array(colors)) 
+    tcmap = ListedColormap(patch_colors)
+
+    collection = PatchCollection(addedPatch, cmap=tcmap, alpha=0.3)
     ax.add_collection(collection)
     plt.pause(4e-4)
-    #time.sleep(0.1)
     plt.cla()
-    patch_colors = []
-    plt.axis('off')
     ax.set_xlim(-100, 100)
     ax.set_ylim(-100, 100)
-    
+    plt.tight_layout()
     plt.show()
 
 
-plt.show()
