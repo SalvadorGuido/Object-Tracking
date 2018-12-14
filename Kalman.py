@@ -26,12 +26,14 @@ class Kalman: # Definición de clase, class name_of_the_class
         self.MountingtoCenterY = None 
         self.MountingtoCenterX = None 
         self.SignedEgoAcel = None
+        self.rangeRad= None 
+        self.AZang= None
         ############# Kalman´s Parameters ##############
         self.X = None
         self.A = None 
         self.P = None 
         self.Q = None 
-        self.H = None 
+        self.H_Dist = None 
         self.R = None 
         self.I = None 
         ############# New X(k-1) ############
@@ -52,8 +54,33 @@ class Kalman: # Definición de clase, class name_of_the_class
         ############## Velocities prediction #####################
         ################ Aceleration prediction ####################
         #self. = array([[0],[0],[0],[0],[0],[0]]) 
+        ############# New #######
+        self.theta = None # Filtro
+		self.T = None # Matriz de transformacion para cambiar de marco de referencia  
+		self.C= None # vector de coordenadas de los clousters 
+		self.Clost = None # Vector de las posiciones de los closter medidas desde el ego
+		self.Newmarco = None # coordenadas de los closter medidias desde el objeto, cambio de marco de referencia
+		self.thetaError = None 
+		self.E = None # Matriz temporal, me sirve para sacar R 
+		######## Me sirve para sacar interpolación lineal ############
+		self.maxerror = None 
+		self.MinError = None
+		self.MinRSP = None
+		self.MaxRSP = None
+		self.MaxAng = None
+		#########################################################################################################
+		self.J = None # Matriz jacobiana para sacar la actualización de E 
+		self.clustsinangle = None
+		self.clustcosangle = None 
+		self.Range = None 
+		self.AgeFactor = None
+		self.DGK = None #  Denominator Of Kalman´s Gain
+		self.PS = None 
+		self.I = None
+		self.XNew = None
+		self.X_measurement= None #[x 0 0 y 0 0 ] vector columna informacion del cluster
 
-    def set_initialKalVal(self, posx, posy, velx, vely, dt, yawRate, sinYangle, cosYangle, egoSpeed, mountingCenterY, mountingCenterX, egoAccel):
+    def set_initialKalVal(self, posx, posy, velx, vely, dt, yawRate, rangeRad, AZang, sinYangle, cosYangle, egoSpeed, mountingCenterY, mountingCenterX, egoAccel):
         self.x = posx 
         self.y = posy 
         self.Vx = velx 
@@ -68,6 +95,8 @@ class Kalman: # Definición de clase, class name_of_the_class
         self.MountingtoCenterY = mountingCenterX
         self.MountingtoCenterX = mountingCenterY
         self.SignedEgoAcel = egoAccel
+        self.rangeRad= rangeRad
+        self.AZang=AZang
         self.PNC = 2.25 
         self.InitValOfP = 1000
         self.FA = 1-(0.3*self.Dt) 
@@ -120,7 +149,60 @@ class Kalman: # Definición de clase, class name_of_the_class
         self.X[5] *= self.FA
         self.P = dot(self.A, dot(self.P, self.A.T))
     
+    def CoordinateTransformation(self):
+        # orientation
+        self.theta = atan2(self.X[4]/self.X[1])
+        # Homogeneous Transformation Matrix
+        self.T = array( [ [ cos(deg2rad(self.theta)) , -sin(deg2rad(self.theta)), X[0] ], [ sin(deg2rad(self.theta)) , cos(deg2rad(self.theta)), X[3] ],
+        [ 0, 0, 1 ] ] )
+        # X[0] and [3] are the centers of the objets
+        self.Newmarco = array([self.x,self.y,[1]])
+        # Newmarco es la medicion de los closter (x,y) desde el ego 
+        self.Newmarco = dot(self.T,self.Newmarco)
+        # Newmarco ahora mide las coordenadas de los closter desde el marco de referencia del objeto 
+    def KalmanFilter_Update(self):
+    	self.I = identity(6)
+    	# Corrección de la posición
+    	# Initialization of matix H for correction of position 
+    	# Transformation Matrix 
+		self.H_Dist = array( [ [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0],  [0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0],  [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0] ] ) 
+		
+		############################ Calculo de theta ####################################
+		self.maxerror = deg2rad(10.0)
+		self.MinError = deg2rad(1.25)
+		self.thetaError = np.interp(self.rangeRad,0,12,self.maxError,self.MinError)
+		self.MinRSP = deg2rad(70.0)
+		self.MaxRSP = deg2rad(80.0)
+		self.MaxAng = deg2rad(5.0)
+		self.thetaError += np.interp(self.AZang,self.MinRSP,self.maxRSP,0,self.MaxAng)
+		##################################################################################
 
+		######################## Calculo de la matriz temporal E #########################
+		self.E = array( [ [ 0.75**2, 0 ], [ 0, self.thetaError**2 ] ] )
+		self.Range = sqr(self.x**2 + self.y**2) # Raiz del cuadrado de clust.Dist de (x) y (y)
+		self.J = array( [self.clustcosangle,-self.clustsinangle*self.Range], 
+		[self.clustsinangle, self.clustcosangle*self.Range] )
+		self.E = dot(self.J, dot(self.E, self.J.T)) 
+		##################################################################################
+
+		######################## Calculo de la matriz de error R #########################
+		self.AgeFactor = np.interp(Object.Lifetiome,0,10.0,0.05,1.0)
+		self.R = diag( ( self.AgeFactor*self.E[0][0], 0 ,0 ,self.AgeFactor*self.E[1][1] ,0,0 ) )
+		
+
+		#self.R = array( [ [ self.AgeFactor*self.E[0][0], self.AgeFactor*self.E[0][1] ], 
+		#[ self.AgeFactor*self.E[1][0], self.AgeFactor*self.E[1][1] ] ] )
+		##################################################################################
+
+		####################### Cálculo de la Gananacia de Kalman ################################
+    	self.DGK = self.R + dot(self.H_Dist, dot(self.P, self.H_Dist.T)) # Denominator Of Kalman´s Gain
+		self.K = dot(self.P, dot(self.H_Dist.T, inv(self.DGK))) # Kalman´s Gain
+
+		self.PS = dot(self.H_Dist,self.X) # Predicted state  
+
+		self.X = self.X + dot(self.K,(self.X_measurement-self.PS)) # Calculate the current State 
+		
+		self.P = dot((I -dot(self.K,self.H_Dist)),self.P)
 
 
 

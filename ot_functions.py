@@ -21,24 +21,30 @@ def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
     vClus=FunctionReadData(sample)
     validRClusters=[]
     validLClusters=[]
+    dynRClus=[]
+    dynLClus=[]
     for clusR in range(vClus[0]):
         cR=ot_cluster.Cluster()
         cRinfo=ReadCsv.get_RightInfoCluster(clusR,sample)
-        cR.set_attributes(cRinfo[0],cRinfo[1],cRinfo[2],cRinfo[3], cRinfo[4], cRinfo[5], cRinfo[6], cRinfo[7], cRinfo[8],cRinfo[9])
+        cR.set_attributes(cRinfo[0],cRinfo[1],cRinfo[2],cRinfo[3], cRinfo[4], cRinfo[5], cRinfo[6], cRinfo[7], cRinfo[8],cRinfo[9], cRinfo[10], clusR)
         cR.set_filtercluster(egoRinfo.f_EgoSpeedSensorSpeedX,egoRinfo.f_EgoSpeedSensorSpeedY, egoRinfo.f_StaClsThrshld,egoRinfo.f_DynClsThrshld, egoRinfo.f_AmbClsThrshld)
         cR.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)
         cR.eval_asnewobject()
+        if cR.s_ClusterKinematicID == 'Dynamic':
+            dynRClus.append(cR)
         validRClusters.append(cR)
         
     for clusL in range(vClus[1]):
         cL=ot_cluster.Cluster()
         cLinfo=ReadCsv.get_LeftInfoCluster(clusL,sample)
-        cL.set_attributes(cLinfo[0],cLinfo[1],cLinfo[2],cLinfo[3],cLinfo[4], cLinfo[5], cLinfo[6], cLinfo[7], cLinfo[8], cLinfo[9])
+        cL.set_attributes(cLinfo[0],cLinfo[1],cLinfo[2],cLinfo[3],cLinfo[4], cLinfo[5], cLinfo[6], cLinfo[7], cLinfo[8], cLinfo[9], cLinfo[10], clusL)
         cL.set_filtercluster(egoLinfo.f_EgoSpeedSensorSpeedX,egoLinfo.f_EgoSpeedSensorSpeedY, egoLinfo.f_StaClsThrshld,egoLinfo.f_DynClsThrshld, egoLinfo.f_AmbClsThrshld)
         cL.eval_kinematics(egoLinfo.f_EgoSpeedClusterBased)
         cL.eval_asnewobject()
+        if cL.s_ClusterKinematicID == 'Dynamic':
+            dynLClus.append(cL)
         validLClusters.append(cL)   
-    return validRClusters,validLClusters
+    return validRClusters,validLClusters, dynRClus, dynLClus
 
 
 def FunctionFilterClusters():
@@ -104,22 +110,25 @@ for sample in range(20):
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
-    [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
+    [valRightClusters, valLeftClusters, dynRClus, dynLClus]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
-
-    [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
+    FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
     print(LeftTrackedObjects.TRACKEDCOUNTER)
     print(RightTrackedObjects.TRACKEDCOUNTER)
     print("sample:" + str(sample))
     
     
-LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
-print(LTO.list_40TrackedObjects[0].f_Kalman.P)
+LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.Matrix_A_P_Q_H_R_I()
+LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.OldStateVector(5)
+LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.RelativeVelocities()
+LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.AceleratioFramework()
+LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.KalmanFilter_Predict()
+print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.P)
+print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.X)
+print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.x)
+print(LeftTrackedObjects.list_40TrackedObjects[1].f_Kalman.Dt)
+
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")

@@ -117,8 +117,10 @@ class Cluster(object):
         self.f_Vrely = None
         self.f_Vabsx = None
         self.f_Vabsy = None
+        self.f_AZang = None
+        self.f_clusID = None
 
-    def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS):
+    def set_attributes(self, newdx, newdy, newrrate, newangle, newsinangle, newconangle, newIRBField, newPBField, newRSPRRte, newRCS, newAZang, clusID):
         self.f_DistX = newdx
         self.f_DistY = newdy
         self.f_RangeRate = newrrate
@@ -129,6 +131,9 @@ class Cluster(object):
         self.u_PropertiesBitField = newPBField
         self.f_RSP_RangeRad = newRSPRRte
         self.f_RCS = newRCS
+        self.f_AZang = newAZang
+        self.f_clusID = clusID
+
 
     def set_filtercluster(self, vegoX, vegoY, StcThrhld, DynThrhld, AmbThrhld):
         self.f_VradIdeal = -((self.f_CosAngle*vegoX) + (self.f_SinAngle*vegoY)) 
@@ -189,8 +194,8 @@ class TrackedObjects(object):
             for i in range(n_newobjects):
                 newObject=TrackedObject()
                 # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority,  newposobj[i].f_RSP_RangeRad,  newposobj[i].f_AZang, 
+                	egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                 # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                 self.list_40TrackedObjects.append(newObject)
 
@@ -200,8 +205,8 @@ class TrackedObjects(object):
             for i in range(n_newobjects):
                 newObject=TrackedObject()
                 # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, newposobj[i].f_RSP_RangeRad,  newposobj[i].f_AZang,
+                	egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                 # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                 self.list_40TrackedObjects.append(newObject)
 
@@ -229,6 +234,7 @@ class TrackedObject(object):
     
     def __init__(self):
         #super(TrackedObject, self).__init__()
+        self.ciclesLive = None 
         self.f_DistX = None
         self.f_DistY = None
         self.f_Vabsx = None
@@ -243,15 +249,17 @@ class TrackedObject(object):
         self.YawRate= None
         self.MountingCenterX = None
         self.MountingCenterY = None
+        self.rangeRad= None
+        self.AZang= None
 
-        self.i_ClustersPerObject = []
+        self.assocClus = []
         self.f_probExist = None
         self.f_probGhost = None
         self.i_ObjectID = None
         self.f_Priority = None
         self.f_Kalman= Kalman()
 
-    def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior,EgoSpeedClusterBased,EgoAccel, EgoSinYawA, EgoCosYawA, dt,YawRate,MountingCenterX,MountingCenterY):
+    def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior, rangeRad, AZang, EgoSpeedClusterBased,EgoAccel, EgoSinYawA, EgoCosYawA, dt,YawRate,MountingCenterX,MountingCenterY):
         self.f_DistX = newdisx
         self.f_DistY = newdisy
         self.f_Vabsx = newvabsx
@@ -266,12 +274,26 @@ class TrackedObject(object):
         self.YawRate= YawRate
         self.MountingCenterX = MountingCenterX
         self.MountingCenterY = MountingCenterY
-        self.f_Kalman.set_initialKalVal(newdisx, newdisy, newvabsx, newvabsy, dt,YawRate, EgoSinYawA, EgoCosYawA, EgoSpeedClusterBased, MountingCenterX,MountingCenterY, EgoAccel)
+        self.rangeRad= rangeRad
+        self.AZang= AZang
+        self.f_Kalman.set_initialKalVal(newdisx, newdisy, newvabsx, newvabsy, dt,YawRate, rangeRad, AZang, EgoSinYawA, EgoCosYawA, EgoSpeedClusterBased, MountingCenterX,MountingCenterY, EgoAccel)
         # self.i_ClustersPerObject = []
         # self.f_probExist = None
         # self.f_probGhost = None
         # self.i_ObjectID = None
         self.f_Priority = newprior
+    def set_KalmanEstimation(self):
+    	self.f_Kalman.Matrix_A_P_Q_H_R_I()
+		self.f_Kalman.OldStateVector(ciclesLive)
+		self.f_Kalman.RelativeVelocities()
+		self.f_Kalman.AceleratioFramework()
+		self.f_Kalman.KalmanFilter_Predict()
+
+	def set_KalmanCorrection(self):
+		for clust in range(self.assocClus):
+			
+
+
     def set_mergeobjects(self):
         pass
 
