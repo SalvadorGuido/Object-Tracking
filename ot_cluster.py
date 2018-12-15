@@ -355,7 +355,7 @@ class TrackedObject(object):
         self.f_Priority = newprior
     def set_KalmanEstimation(self):
         self.f_Kalman.Matrix_A_P_Q_H_R_I()
-        self.f_Kalman.OldStateVector(self.i_lifeciclescoutnere)
+        self.f_Kalman.OldStateVector(self.i_lifeciclescoutner)
         self.f_Kalman.RelativeVelocities()
         self.f_Kalman.AceleratioFramework()
         self.f_Kalman.KalmanFilter_Predict()

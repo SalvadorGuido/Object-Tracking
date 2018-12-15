@@ -133,24 +133,17 @@ for sample in range(CICLES_TO_RUN):
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
 
     print("sample:" + str(sample))
-    if len(LeftTrackedObjects.list_40TrackedObjects) > 1:
+    if len(LeftTrackedObjects.list_40TrackedObjects) > 0:
         
         print(LeftTrackedObjects.TRACKEDCOUNTER)
         print(RightTrackedObjects.TRACKEDCOUNTER)
 
         print("LeftTrackedObjects kalman :" + str(sample))
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+        LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
         print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+    if len(RightTrackedObjects.list_40TrackedObjects) > 0:
         print("RightTrackedObjects kalman:" + str(sample))
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
+        RightTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
         print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
 
 #
