@@ -196,7 +196,7 @@ class TrackedObjects(object):
                 newObject=TrackedObject()
                 # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
                 newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority,  newposobj[i].f_RSP_RangeRad,  newposobj[i].f_AZang, 
-                	egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                    egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                 # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                 self.list_40TrackedObjects.append(newObject)
 
@@ -354,55 +354,21 @@ class TrackedObject(object):
         # self.i_ObjectID = None
         self.f_Priority = newprior
     def set_KalmanEstimation(self):
-    	self.f_Kalman.Matrix_A_P_Q_H_R_I()
-		self.f_Kalman.OldStateVector(ciclesLive)
-		self.f_Kalman.RelativeVelocities()
-		self.f_Kalman.AceleratioFramework()
-		self.f_Kalman.KalmanFilter_Predict()
+        self.f_Kalman.Matrix_A_P_Q_H_R_I()
+        self.f_Kalman.OldStateVector(self.i_lifeciclescoutnere)
+        self.f_Kalman.RelativeVelocities()
+        self.f_Kalman.AceleratioFramework()
+        self.f_Kalman.KalmanFilter_Predict()
 
-	def set_KalmanCorrection(self):
-		for clust in range(self.assocClus):
-			
-
-
-    def set_mergeobjects(self):
-        pass
-
-
-# In[5]:
-class SampleClusters(object):
-    """docstring for SampleClusters"""
-    def __init__(self):
-        #super(SampleClusters, self).__init__()
-        self.validClustersPerSample = None
-        self.listofValidClusters = None
-        
-
-
-
-# def FunctionReadData():
-#     return None
-
-# def FunctionCreateClusters():
-#     return None
-
-# def FunctionFilterClusters():
-#     return None
-
-# def FunctionCreateObjects():
-#     return None
-
-# def FunctionMergeObjects():
-#     return None
-
-# def FunctionTrackingObjects():
-#     return None
-
-# def FunctionGraphicalInterface():
-#     return None
-
-
-
+    def set_KalmanCorrection(self):
+        for clust in range(self.assocClus):
+            self.Kalman.KalmanFilter_Update(self.assocClus[clust].f_DistX, self.assocClus[clust].f_DistY,self.assocClus[clust].f_Vrelx,self.assocClus[clust].f_Vrely)
+            
+    def set_AssocClusters(self, dynClus):
+        for clust in range(dynClus):
+            posClus= self.Kalman.CoordinateTransformation(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
+            if posClus<3:
+                self.assocClus.append(dynClus[clust])
 
 
 # a = Cluster()
