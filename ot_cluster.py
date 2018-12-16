@@ -209,16 +209,16 @@ class TrackedObjects(object):
                 del self.list_40TrackedObjects[-1:]
                 newObject=TrackedObject()
 
-                newObject.set_createobject(newposobj[0].f_DistX, newposobj[0].f_DistY, newposobj[0].f_Vabsx, newposobj[0].f_Vabsy, newposobj[0].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                newObject.set_createobject(newposobj[0].f_DistX, newposobj[0].f_DistY, newposobj[0].f_Vabsx, newposobj[0].f_Vabsy, newposobj[0].f_ObjectPriority, newposobj[0].f_RSP_RangeRad,  newposobj[0].f_AZang,
+                 egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                 self.list_40TrackedObjects.append(newObject)
             else:
 
                 for i in range(n_toinsert):
                     newObject=TrackedObject()
                     # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-                    newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                        egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                    newObject.set_createobject(newposobj[0].f_DistX, newposobj[0].f_DistY, newposobj[0].f_Vabsx, newposobj[0].f_Vabsy, newposobj[0].f_ObjectPriority, newposobj[0].f_RSP_RangeRad,  newposobj[0].f_AZang,
+                 egoInfo.f_EgoSpeedClusterBased, egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                     # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                     self.list_40TrackedObjects.append(newObject)
             self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
@@ -321,7 +321,7 @@ class TrackedObject(object):
         self.rangeRad= None
         self.AZang= None
 
-        self.assocClus = []
+        #self.assocClus = []
         self.f_probExist = None
         self.f_probGhost = None
         self.i_ObjectID = None
@@ -347,28 +347,35 @@ class TrackedObject(object):
         self.MountingCenterY = MountingCenterY
         self.rangeRad= rangeRad
         self.AZang= AZang
-        self.f_Kalman.set_initialKalVal(newdisx, newdisy, newvabsx, newvabsy, dt,YawRate, rangeRad, AZang, EgoSinYawA, EgoCosYawA, EgoSpeedClusterBased, MountingCenterX,MountingCenterY, EgoAccel)
         # self.i_ClustersPerObject = []
         # self.f_probExist = None
         # self.f_probGhost = None
         # self.i_ObjectID = None
         self.f_Priority = newprior
     def set_KalmanEstimation(self):
+        self.f_Kalman.set_initialKalVal(self.f_DistX,self.f_DistY, self.f_Vabsx, self.f_Vabsy, self.dt,self.YawRate, self.f_EgoSinYawA, self.f_EgoCosYawA, self.f_EgoSpeedClusterBased, self.MountingCenterX,self.MountingCenterY, self.f_EgoAccel)
         self.f_Kalman.Matrix_A_P_Q_H_R_I()
         self.f_Kalman.OldStateVector(self.i_lifeciclescoutner)
         self.f_Kalman.RelativeVelocities()
         self.f_Kalman.AceleratioFramework()
         self.f_Kalman.KalmanFilter_Predict()
-
-    def set_KalmanCorrection(self):
-        for clust in range(self.assocClus):
-            self.Kalman.KalmanFilter_Update(self.assocClus[clust].f_DistX, self.assocClus[clust].f_DistY,self.assocClus[clust].f_Vrelx,self.assocClus[clust].f_Vrely)
-            
+        
+        [self.f_DistX, self.f_Vabsx, self.f_AccelX, self.f_DistY, self.f_Vabsy, self.f_AccelY]= self.f_Kalman.X
+       
     def set_AssocClusters(self, dynClus):
-        for clust in range(dynClus):
-            posClus= self.Kalman.CoordinateTransformation(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
+    	assocClus=[]
+        for clust in range(len(dynClus)):
+            posClus= self.f_Kalman.CoordinateTransformation(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
+            dist2clust=sqrt((dynClus[clust].f_DistX**2)+(dynClus[clust].f_DistY**2))
             if posClus<3:
-                self.assocClus.append(dynClus[clust])
+                assocClus.append(dynClus[clust])
+                print(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
+        self.set_KalmanCorrection(assocClus)
+    def set_KalmanCorrection(self,assocClus):
+        for clust in range(len(assocClus)):
+            self.f_Kalman.KalmanFilter_Update(assocClus[clust].f_DistX, assocClus[clust].f_DistY, assocClus[clust].f_Vrelx, assocClus[clust].f_Vrely,  assocClus[clust].f_RSP_RangeRad, assocClus[clust].f_AZang, assocClus[clust].f_SinAngle, assocClus[clust].f_CosAngle)
+
+              
 
 
 # a = Cluster()

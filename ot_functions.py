@@ -106,7 +106,7 @@ def FunctionGraphicalInterface():
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
 
-CICLES_TO_RUN = 20
+CICLES_TO_RUN = 60
 DELAY_IN_S = 0.001
 
 for sample in range(CICLES_TO_RUN):
@@ -136,23 +136,22 @@ for sample in range(CICLES_TO_RUN):
     if len(LeftTrackedObjects.list_40TrackedObjects) > 0:
         
         print(LeftTrackedObjects.TRACKEDCOUNTER)
-        print(RightTrackedObjects.TRACKEDCOUNTER)
-
         print("LeftTrackedObjects kalman :" + str(sample))
         LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
-        print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        #print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        LeftTrackedObjects.list_40TrackedObjects[0].set_AssocClusters(dynLClus)
+        
+        #LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
+
     if len(RightTrackedObjects.list_40TrackedObjects) > 0:
+        print(RightTrackedObjects.TRACKEDCOUNTER)
         print("RightTrackedObjects kalman:" + str(sample))
         RightTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
+        #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        RightTrackedObjects.list_40TrackedObjects[0].set_AssocClusters(dynRClus)
+        #RightTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
         print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
 
-#
-#LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-#LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-#LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-#LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-#LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
-#print(LTO.list_40TrackedObjects[0].f_Kalman.P)
 
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
