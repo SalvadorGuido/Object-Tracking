@@ -363,7 +363,7 @@ class TrackedObject(object):
         [self.f_DistX, self.f_Vabsx, self.f_AccelX, self.f_DistY, self.f_Vabsy, self.f_AccelY]= self.f_Kalman.X
        
     def set_AssocClusters(self, dynClus):
-    	assocClus=[]
+        assocClus=[]
         for clust in range(len(dynClus)):
             posClus= self.f_Kalman.CoordinateTransformation(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
             dist2clust=sqrt((dynClus[clust].f_DistX**2)+(dynClus[clust].f_DistY**2))
@@ -374,7 +374,7 @@ class TrackedObject(object):
     def set_KalmanCorrection(self,assocClus):
         for clust in range(len(assocClus)):
             self.f_Kalman.KalmanFilter_Update(assocClus[clust].f_DistX, assocClus[clust].f_DistY, assocClus[clust].f_Vrelx, assocClus[clust].f_Vrely,  assocClus[clust].f_RSP_RangeRad, assocClus[clust].f_AZang, assocClus[clust].f_SinAngle, assocClus[clust].f_CosAngle)
-
+        [self.f_DistX, self.f_Vabsx, self.f_AccelX, self.f_DistY, self.f_Vabsy, self.f_AccelY]= self.f_Kalman.X
               
 
 

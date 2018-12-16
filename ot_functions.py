@@ -15,12 +15,7 @@ import os
 
 
 # In[4]:
-def cls():
-    if os.name=='posix':
-        !clear
-    else:
-        !clc
-     
+ 
     
 def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
@@ -56,10 +51,7 @@ def FunctionCreateClusters(sample, egoRinfo, egoLinfo):
     return validRClusters,validLClusters, dynRClus, dynLClus
 
 
-def FunctionFilterClusters():
-    return None
-
-def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLinfo):
+def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLInfo):
     
 #    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
@@ -91,67 +83,69 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     # return L_ValidClustersObjects, R_ValidClustersObjects
     return l_trackedobj, r_trackedobj
 
-def FunctionMergeObjects():
-    return None
-
-def FunctionTrackingObjects():
-    return None
-
-def FunctionGraphicalInterface():
-    return None
-
-
 # In[5]:
 
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
-
-CICLES_TO_RUN = 60
-DELAY_IN_S = 0.001
-
-for sample in range(CICLES_TO_RUN):
-    sleep(DELAY_IN_S)
-    cls()
 #    !clear
  #   sample = 200
+def get_ClustersList(sample):
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
     egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
 
-    
+
     egoRInfo=ot_cluster.Ego()
     egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2],egoInfoRight[3],egoInfoRight[4], egoInfoRight[5], egoInfoRight[6], egoInfoRight[7], egoInfoRight[8], egoInfoRight[9])
-    
+
     egoLInfo=ot_cluster.Ego()
     egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2],egoInfoLeft[3],egoInfoLeft[4], egoInfoLeft[5], egoInfoLeft[6], egoInfoLeft[7] ,egoInfoLeft[8] ,egoInfoLeft[9])
-    
+
     egoRInfo.eval_thresholds()
     egoLInfo.eval_thresholds()
 
     [valRightClusters, valLeftClusters, dynRClus, dynLClus]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
-    
 
+    return [valRightClusters, valLeftClusters]
+  
+def get_objectsList(sample) :
+    global LeftTrackedObjects, RightTrackedObjects
+    egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
+    egoInfoRight=ReadCsv.get_egoRightInfoCluster(sample)
+
+
+    egoRInfo=ot_cluster.Ego()
+    egoRInfo.set_EgoSpeeds(egoInfoRight[0],egoInfoRight[1],egoInfoRight[2],egoInfoRight[3],egoInfoRight[4], egoInfoRight[5], egoInfoRight[6], egoInfoRight[7], egoInfoRight[8], egoInfoRight[9])
+
+    egoLInfo=ot_cluster.Ego()
+    egoLInfo.set_EgoSpeeds(egoInfoLeft[0],egoInfoLeft[1],egoInfoLeft[2],egoInfoLeft[3],egoInfoLeft[4], egoInfoLeft[5], egoInfoLeft[6], egoInfoLeft[7] ,egoInfoLeft[8] ,egoInfoLeft[9])
+
+    egoRInfo.eval_thresholds()
+    egoLInfo.eval_thresholds()
+
+    [valRightClusters, valLeftClusters, dynRClus, dynLClus]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
-
-    print("sample:" + str(sample))
     if len(LeftTrackedObjects.list_40TrackedObjects) > 0:
-        
+    
         print(LeftTrackedObjects.TRACKEDCOUNTER)
         print("LeftTrackedObjects kalman :" + str(sample))
-        LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
-        #print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-        LeftTrackedObjects.list_40TrackedObjects[0].set_AssocClusters(dynLClus)
-        
-        #LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
+        for leftObject in range(len(LeftTrackedObjects.list_40TrackedObjects)):
+            LeftTrackedObjects.list_40TrackedObjects[leftObject].set_KalmanEstimation()
+            #print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+            LeftTrackedObjects.list_40TrackedObjects[leftObject].set_AssocClusters(dynLClus)
+    
+    #LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
 
     if len(RightTrackedObjects.list_40TrackedObjects) > 0:
+
         print(RightTrackedObjects.TRACKEDCOUNTER)
         print("RightTrackedObjects kalman:" + str(sample))
-        RightTrackedObjects.list_40TrackedObjects[0].set_KalmanEstimation()
+        for rightObject in range(len (RightTrackedObjects.list_40TrackedObjects)):
+            RightTrackedObjects.list_40TrackedObjects[rightObject].set_KalmanEstimation()
+            #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+            RightTrackedObjects.list_40TrackedObjects[rightObject].set_AssocClusters(dynRClus)
+            #RightTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
         #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-        RightTrackedObjects.list_40TrackedObjects[0].set_AssocClusters(dynRClus)
-        #RightTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
-        print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-
+    return [RightTrackedObjects, LeftTrackedObjects]
 
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
