@@ -369,7 +369,7 @@ class TrackedObject(object):
             dist2clust=sqrt((dynClus[clust].f_DistX**2)+(dynClus[clust].f_DistY**2))
             if posClus<3:
                 assocClus.append(dynClus[clust])
-                print(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
+                #print(dynClus[clust].f_DistX, dynClus[clust].f_DistY)
         self.set_KalmanCorrection(assocClus)
     def set_KalmanCorrection(self,assocClus):
         for clust in range(len(assocClus)):

@@ -84,9 +84,11 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     return l_trackedobj, r_trackedobj
 
 # In[5]:
-
-LeftTrackedObjects = ot_cluster.TrackedObjects()
-RightTrackedObjects = ot_cluster.TrackedObjects()
+global LeftTrackedObjects, RightTrackedObjects
+def createObjectsLists():
+    global LeftTrackedObjects, RightTrackedObjects
+    LeftTrackedObjects= ot_cluster.TrackedObjects()
+    RightTrackedObjects = ot_cluster.TrackedObjects()
 #    !clear
  #   sample = 200
 def get_ClustersList(sample):
@@ -126,8 +128,8 @@ def get_objectsList(sample) :
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
     if len(LeftTrackedObjects.list_40TrackedObjects) > 0:
     
-        print(LeftTrackedObjects.TRACKEDCOUNTER)
-        print("LeftTrackedObjects kalman :" + str(sample))
+        #print(LeftTrackedObjects.TRACKEDCOUNTER)
+        #print("LeftTrackedObjects kalman :" + str(sample))
         for leftObject in range(len(LeftTrackedObjects.list_40TrackedObjects)):
             LeftTrackedObjects.list_40TrackedObjects[leftObject].set_KalmanEstimation()
             #print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
@@ -137,8 +139,8 @@ def get_objectsList(sample) :
 
     if len(RightTrackedObjects.list_40TrackedObjects) > 0:
 
-        print(RightTrackedObjects.TRACKEDCOUNTER)
-        print("RightTrackedObjects kalman:" + str(sample))
+        #print(RightTrackedObjects.TRACKEDCOUNTER)
+        #print("RightTrackedObjects kalman:" + str(sample))
         for rightObject in range(len (RightTrackedObjects.list_40TrackedObjects)):
             RightTrackedObjects.list_40TrackedObjects[rightObject].set_KalmanEstimation()
             #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
