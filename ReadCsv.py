@@ -106,7 +106,8 @@ def get_LeftInfoCluster(cluster, sample):
     PBField= rawLSensorValidData[rawLSheaders[(cluster*EMnoColumns)+11]][sample]
     RCS= rawLSensorValidData[rawLSheaders[(cluster*EMnoColumns)+5]][sample]
     rspRangeRad=rspLSensorValidData[rspLSheaders[indexLeftRSPDataSensor+(cluster*RSPnoColumns)]][sample]
-    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS)
+    rspAZang=rspLSensorValidData[rspLSheaders[indexLeftRSPDataSensor+(cluster*RSPnoColumns)+2]][sample]
+    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS, rspAZang)
 
 def get_RightInfoCluster(cluster, sample):
     dx = rawRSensorValidData[rawRSheaders[(cluster*EMnoColumns)+2]][sample]
@@ -119,7 +120,8 @@ def get_RightInfoCluster(cluster, sample):
     PBField= rawRSensorValidData[rawRSheaders[(cluster*EMnoColumns)+11]][sample]
     RCS= rawRSensorValidData[rawRSheaders[(cluster*EMnoColumns)+5]][sample]
     rspRangeRad=rspRSensorValidData[rspRSheaders[indexRightRSPDataSensor+(cluster*RSPnoColumns)]][sample]
-    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS)
+    rspAZang=rspRSensorValidData[rspRSheaders[indexRightRSPDataSensor+(cluster*RSPnoColumns)+2]][sample]
+    return (dx, dy, Rrate, angle, sinA, cosA, IRBfield, PBField,rspRangeRad, RCS, rspAZang)
 
 def get_egoLeftInfoCluster(sample):
     EgoSpeed= rawLSensorValidData['SIM EM LEFT.DataProcCycle.EMGlobalOutput.fEgoSpeedClusterBased'][sample]
