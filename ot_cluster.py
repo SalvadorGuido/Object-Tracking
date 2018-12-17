@@ -33,6 +33,7 @@ iBestAssocObj:
 
 
 """
+# In[1]:
 import numpy as np
 from Kalman import *
 # DISX = 2
@@ -42,7 +43,7 @@ from Kalman import *
 # ListTrackedObjects = 0
 # ListClusters = 0
 
-# In[1]:
+# In[2]:
 class Ego(object):
     """docstring for Ego"""
     def __init__(self):
@@ -85,7 +86,7 @@ class Ego(object):
         self.f_AmbClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.25, 1.50])
         self.f_DynClsThrshld = np.interp(abs(self.f_EgoSpeedClusterBased),[0.00, 1.50], [0.38, 1.75])
 
-# In[2]:
+# In[3]:
 class Cluster(object):
     PI = np.pi 
     EM_CLU_VALID = 0
@@ -168,123 +169,219 @@ class Cluster(object):
     def __str__(self):
         return "Cluster:dx,xy,rrage:"+str(self.f_DistX)+":"+str(self.f_DistY)+":"+str(self.f_RangeRate)
 
-# In[3]:
+# In[4]:
 class TrackedObjects(object):
     """docstring for TrackedObjects"""
     TRACKEDCOUNTER = 0
     MAXTRACKEDOBJECTS = 40
     MAXCICLESALIVE = 10
-    RADIOTOCOMBINE = 10
+    RADIOTOCOMBINE = 2.0
 
     def __init__(self):
         #super(TrackedObjects, self).__init__()
-        self.list_40TrackedObjects = []
+        self.l_40TrackedObjs = []
+        self.l_buffCombinedObjs = []
         self.d_objects = 0
         self.temp_obj = TrackedObject()
 
-    def set_insertNewObjects(self, newposobj, egoInfo):
-        n_newobjects = len(newposobj)
-        # print("in class TrackedObjects no received " + str(n_newobjects))
-        if abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER )) >= n_newobjects:
-            self.TRACKEDCOUNTER += n_newobjects
-            for i in range(n_newobjects):
-                newObject=TrackedObject()
-                # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-                newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
-                # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
-                self.list_40TrackedObjects.append(newObject)
 
-            self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
-            # print("Counter in class if true " + str(self.TRACKEDCOUNTER))
-        else:
-            n_toinsert = self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER
-            self.TRACKEDCOUNTER += n_toinsert
-            if self.MAXTRACKEDOBJECTS == self.TRACKEDCOUNTER:
-                del self.list_40TrackedObjects[-1:]
-                newObject=TrackedObject()
-                newObject.set_createobject(newposobj[0].f_DistX, newposobj[0].f_DistY, newposobj[0].f_Vabsx, newposobj[0].f_Vabsy, newposobj[0].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
-                self.list_40TrackedObjects.append(newObject)
-            else:
+    def set_lifecounterup(self):
+        # print("##########INSIDE set_lifecounterup") 
+        for i in range(len(self.l_40TrackedObjs)):
+            self.l_40TrackedObjs[i].i_lifeciclescoutner += 1
+            if (10 == self.l_40TrackedObjs[i].i_lifeciclescoutner):
+                self.l_40TrackedObjs[i].s_isobjcombinable = 'No-Combinable'
+            elif(10 > self.l_40TrackedObjs[i].i_lifeciclescoutner):
+                self.l_40TrackedObjs[i].s_isobjcombinable = 'Combinable'
 
-                for i in range(n_toinsert):
-                    newObject=TrackedObject()
-                    # newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_RangeRate, newposobj[i].f_Vrelx, newposobj[i].f_Vrely, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy,  newposobj[i].f_ObjectPriority)
-                    newObject.set_createobject(newposobj[i].f_DistX, newposobj[i].f_DistY, newposobj[i].f_Vabsx, newposobj[i].f_Vabsy, newposobj[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
-                        egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
-                    # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
-                    self.list_40TrackedObjects.append(newObject)
-            self.list_40TrackedObjects.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
-            # self.list_40TrackedObjects.append(newObject)
-            
-            # n_topop = abs(len(self.list_40TrackedObjects)-self.MAXTRACKEDOBJECTS)
-            # del self.list_40TrackedObjects[-n_topop:]
-            # print("Counter in class if false " + str(self.TRACKEDCOUNTER))
+    def eval_distance(self, obj_1, obj_2):
+        # print("##########INSIDE eval_distance") 
+        self.d_objects = np.sqrt(np.power(obj_1.f_DistY - obj_2.f_DistY, 2) + np.power(obj_1.f_DistX - obj_2.f_DistX, 2))
 
-    def set_combinenewobjects(self):
-        for i in range(len(self.list_40TrackedObjects)):
-            self.list_40TrackedObjects[i].f_DistAbs = np.sqrt(np.power(list_40TrackedObjects[i].f_DistY) + np.power(list_40TrackedObjects[i].f_DistX))
-        for i in range(len(self.list_40TrackedObjects)):
-            for j in range(len(self.list_40TrackedObjects)):
-                if i != j:
-                    eval_distance(self.list_40TrackedObjects[i], self.list_40TrackedObjects[j])
-                    if self.d_objects <= self.RADIOTOCOMBINE:
-                        remove_object(self.list_40TrackedObjects[i], self.list_40TrackedObjects[j], i, j, self.list_40TrackedObjects)
-
-
+    def set_evalDistanceToEgo(self):
+        # print("##########INSIDE set_evalDistanceToEgo ") 
+        n_objects = len(self.l_40TrackedObjs)
+        if self.l_40TrackedObjs: #     #### eval distance between ego and each object in l_40TrackedObjs
+            for i in range(n_objects):
+                self.l_40TrackedObjs[i].f_DistAbs = np.sqrt(np.power(self.l_40TrackedObjs[i].f_DistY, 2) + np.power(self.l_40TrackedObjs[i].f_DistX, 2))   
     
-    def remove_object(self, obj1, obj2, indexremove, idexinsert, listobjects):
-        self.temp_obj = obj1
-        self.temp_obj.f_DistX = (obj1.f_DistX + obj2.f_DistX)/2
-        self.temp_obj.f_DistY = (obj1.f_DistY + obj2.f_DistY)/2
-        self.temp_obj.f_DistAbs = (obj1 + obj2)/2
-        self.temp_obj.f_Vabsx = (obj1.f_Vabsx + obj2.f_Vabsx)/2
-        self.temp_obj.f_Vabsy = (obj1.f_Vabsy + obj2.f_Vabsy)/2
-        self.temp_obj.f_AccelX = (obj1.f_AccelX + obj2.f_AccelX)/2
-        self.temp_obj.f_AccelY = (obj1.f_AccelY + obj2.f_AccelY)/2
-        self.temp_obj.f_EgoSpeedClusterBased = obj1.f_EgoSpeedClusterBased 
+    def set_createNewObjects(self, l_newobjs, egoInfo):
+        ### receives sorted list of clusters to be objects, creates new TrackedObject() and append it to l_40TrackedObjs
+        ### sorts l_40TrackedObjs based on probability
+        print("##########INSIDE set_createNewObjects ")
+        print("Number of l_40TrackedObjs::type::elements" +str(len(self.l_40TrackedObjs)) + "::" + str(type(self.l_40TrackedObjs)) + "::" +str(self.l_40TrackedObjs))
+        print("Number of l_newobjs::type::elements" +str(len(l_newobjs)) + "::" + str(type(l_newobjs)) + "::" +str(l_newobjs))
+        n_newobjects = len(l_newobjs)
+        self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+        # if self.l_40TrackedObjs:
+            # print("NOT EMPTY l_40TrackedObjs")
+            # print("Number of l_40TrackedObjs::type::elements" +str(len(self.l_40TrackedObjs)) + "::" + str(type(self.l_40TrackedObjs)) + "::" +str(self.l_40TrackedObjs))
+            # self.l_40TrackedObjs.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+        if l_newobjs:
+            # print("NOT EMPTY l_newobjs")
+            if (self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER) >= n_newobjects:
+                # self.TRACKEDCOUNTER += n_newobjects
+                print("abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER))" + str(abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER))))
+                print("n_newobjects" + str(n_newobjects))
+                
+                for i in range(n_newobjects):
+                    newObject=TrackedObject()
+                    newObject.set_creationobjflag('NewObject')
+                    newObject.set_isobjcombinableflag('Combinable')
+                    # newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_RangeRate, l_newobjs[i].f_Vrelx, l_newobjs[i].f_Vrely, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy,  l_newobjs[i].f_ObjectPriority)
+                    newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy, l_newobjs[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                        egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)                  
+                    self.l_40TrackedObjs.append(newObject)
+                    self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+                    print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+
+                # print("line 207 Number of Objects in l_40TrackedObjs if " + str(len(self.l_40TrackedObjs)))
+                # print("line 208 Number of new objects if " + str(len(l_newobjs)) + "::type::" + str(type(l_newobjs)))
+                # print(self.l_40TrackedObjs)
+                self.l_40TrackedObjs.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
+
+                # print("Counter in class if true " + str(self.TRACKEDCOUNTER))
+            else:
+                
+                # self.TRACKEDCOUNTER += n_toinsert
+                self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+                if self.MAXTRACKEDOBJECTS == self.TRACKEDCOUNTER:
+                    del self.l_40TrackedObjs[-1:]
+                    newObject=TrackedObject()
+                    newObject.set_creationobjflag('NewObject')
+                    newObject.set_isobjcombinableflag('Combinable')
+                    ##########set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior, EgoSpeedClusterBased, EgoAccel, EgoSinYawA, EgoCosYawA, dt, YawRate, MountingCenterX, MountingCenterY):
+                    newObject.set_createobject(l_newobjs[0].f_DistX, l_newobjs[0].f_DistY, l_newobjs[0].f_Vabsx, l_newobjs[0].f_Vabsy, l_newobjs[0].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                        egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                    self.l_40TrackedObjs.append(newObject)
+                    self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+                    print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+                elif self.MAXTRACKEDOBJECTS > self.TRACKEDCOUNTER:
+                    n_toinsert = self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER
+                    for i in range(n_toinsert):
+                        newObject=TrackedObject()
+                        newObject.set_creationobjflag('NewObject')
+                        newObject.set_isobjcombinableflag('Combinable')
+                        # newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_RangeRate, l_newobjs[i].f_Vrelx, l_newobjs[i].f_Vrely, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy,  l_newobjs[i].f_ObjectPriority)
+                        newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy, l_newobjs[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                            egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
+                        # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
+                        self.l_40TrackedObjs.append(newObject)
+                        self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+                        print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+                # print("line 233 Number of Objects in l_40TrackedObjs else" + str(len(self.l_40TrackedObjs)))
+                # print("line 234 Number of new objects else " + str(len(l_newobjs)) + "::type::" + str(type(l_newobjs)))
+                self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)
+                # print("line 236Tracked Objects Counter " + str(self.TRACKEDCOUNTER))
+        # else:
+        #     pass# print("INSIDE set_createNewObjects EMPTY ARGUMENT")
+
+
+    def set_evalCombineObjs(self):
+        print("####################INSIDE set_evalCombineObjs####################") 
+        n_objects = len(self.l_40TrackedObjs)
+        # if n_objects > 0:            
+        # if self.l_40TrackedObjs:     
+        for p in range(n_objects):
+            for j in range(n_objects):
+                if p < j:
+                    self.eval_distance(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
+                    print("Distance between objects " + str(round(self.d_objects,4)) + "::" + str(p) + "::" + str(j))  
+                    print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[p].s_isobjcombinable))
+                    print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[j].s_isobjcombinable))  
+                    if (self.d_objects <= self.RADIOTOCOMBINE) and ('Combinable' == self.l_40TrackedObjs[p].s_isobjcombinable) and ('Combinable' == self.l_40TrackedObjs[j].s_isobjcombinable):
+                        print("NewCombinedObject, Number of l_buffCombinedObjs before::" + str(len(self.l_buffCombinedObjs)))
+                        self.set_createCombinedObjs(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
+                        # print("NewCombinedObject, Number of l_buffCombinedObjs after::" + str(len(self.l_buffCombinedObjs)))  
+
+    def set_createCombinedObjs(self, obj_1, obj_2):
+        print("##########INSIDE set_createCombinedObjs") 
+        print("Number of tracked objs in l_40TrackedObjs ::" + str(len(self.l_40TrackedObjs)))
+        print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
+            
+        # print("INDEX TO REMOVE " + str(indexremove))
+        # print("INDEX TO INSERT " + str(indexinsert))
+        obj_1.set_isobjcombinableflag('No-Combinable')
+        obj_2.set_isobjcombinableflag('No-Combinable')
+        obj_1.set_creationobjflag('AlreadyCombinedObj')
+        obj_2.set_creationobjflag('AlreadyCombinedObj')  
+
+        # self.temp_obj = obj_1
+        # self.temp_obj = TrackedObject()
+        self.temp_obj.f_DistX = (obj_1.f_DistX + obj_2.f_DistX)/2
+        self.temp_obj.f_DistY = (obj_1.f_DistY + obj_2.f_DistY)/2
+        self.temp_obj.f_DistAbs = (obj_1.f_DistAbs + obj_2.f_DistAbs)/2
+        self.temp_obj.f_Vabsx = (obj_1.f_Vabsx + obj_2.f_Vabsx)/2
+        self.temp_obj.f_Vabsy = (obj_1.f_Vabsy + obj_2.f_Vabsy)/2
+        self.temp_obj.f_AccelX = (obj_1.f_AccelX + obj_2.f_AccelX)/2
+        self.temp_obj.f_AccelY = (obj_1.f_AccelY + obj_2.f_AccelY)/2
+        self.temp_obj.f_EgoSpeedClusterBased = (obj_1.f_EgoSpeedClusterBased + obj_2.f_EgoSpeedClusterBased)/2
         self.temp_obj.f_EgoAccel = None
         self.temp_obj.f_EgoSinYawA = None
         self.temp_obj.f_EgoCosYawA = None
+        self.temp_obj.f_ObjLength = abs(obj_1.f_DistX - obj_2.f_DistX)
+        self.temp_obj.f_ObjWidth = abs(obj_1.f_DistY - obj_2.f_DistY)        
         self.temp_obj.dt = None
         self.temp_obj.YawRate= None
         self.temp_obj.MountingCenterX = None
         self.temp_obj.MountingCenterY = None
-        self.i_ClustersPerObject = []
-        self.f_probExist = None
-        self.f_probGhost = None
-        self.i_ObjectID = None
-        self.f_Priority = (obj1.f_Priority + obj2.f_Priority)/2
-        self.i_lifeciclescoutner = min(obj1.i_lifeciclescoutner, obj2.i_lifeciclescoutner)
-        self.s_isobjectalive = 'Alive' 
-        self.f_Kalman = Kalman()
-        listobjects.pop(indexremove)
-        listobjects.insert(idexinsert, self.temp_obj)
+        self.temp_obj.i_ClustersPerObject = []
+        self.temp_obj.f_probExist = None
+        self.temp_obj.f_probGhost = None
+        self.temp_obj.i_ObjectID = None
+        self.temp_obj.f_Priority = (obj_1.f_Priority + obj_2.f_Priority)/2
+        self.temp_obj.i_lifeciclescoutner = min(obj_1.i_lifeciclescoutner, obj_2.i_lifeciclescoutner)
+        self.temp_obj.s_isobjcombinable = 'Combinable'
+        self.temp_obj.s_creationobjflag = 'NewCombinedObject' #{'NewObject', 'AlreadyCombinedObj', 'NewCombinedObject'}
+        self.temp_obj.f_Kalman = Kalman()
+        self.l_buffCombinedObjs.append(self.temp_obj)
+        # if indexinsert > indexremove:
+        #     self.l_40TrackedObjs.pop(indexremove)
+        #     self.l_40TrackedObjs.insert(indexinsert - 1, self.temp_obj)
+        #     self.l_40TrackedObjs.pop(indexinsert)
+        # elif indexinsert < indexremove:
+        #     self.l_40TrackedObjs.pop(indexremove)
+        #     self.l_40TrackedObjs.insert(indexinsert, self.temp_obj)
+        #     self.l_40TrackedObjs.pop(indexinsert + 1)        
 
-
-    def set_lifecounterup(self):
-        for i in range(len(self.list_40TrackedObjects)):
-            self.list_40TrackedObjects[i].i_lifeciclescoutner += 1
-            if (10 == self.list_40TrackedObjects[i].i_lifeciclescoutner):
-                self.list_40TrackedObjects[i].s_isobjectalive = 'Dead'
-            elif(10 > self.list_40TrackedObjects[i].i_lifeciclescoutner):
-                self.list_40TrackedObjects[i].s_isobjectalive = 'Alive'
-
-    def eval_distance(self, obj1, obj2):
-        self.d_objects = np.sqrt(np.power(obj1.f_DistY - obj2.f_DistY, 2) + np.power(obj1.f_DistX - obj2.f_DistX, 2))
-        
+    def set_update40TrackedObjs(self):
+        print("##########INSIDE set_update40TrackedObjs") 
+        print("Number of Objects in l_40TrackedObjs " + str(len(self.l_40TrackedObjs)))
+        print("Number of Objects in l_buffCombinedObjs " + str(len(self.l_buffCombinedObjs)))# + "::type::" + str(type(self.l_buffCombinedObjs)))
+        # print(self.l_buffCombinedObjs)
+        # if self.l_40TrackedObjs:
+        n_alrcombobjs = len([p for p in self.l_40TrackedObjs if p.s_creationobjflag == 'AlreadyCombinedObj']) ###Number of objects already combined
+        n_combobjs = len(self.l_buffCombinedObjs) ###Number of elements in buffer l_buffCombinedObjs
+        if n_alrcombobjs > 0:
+            print("Number of AlreadyCombinedObj::" + str(n_alrcombobjs))
+            print("Number of Objs in l_40TrackedObjs before del::" + str(len(self.l_40TrackedObjs)))
+            print("Number of Objs in l_buffCombinedObjs::" + str(len(self.l_buffCombinedObjs)))
+            self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.s_creationobjflag)
+            del self.l_40TrackedObjs[-n_alrcombobjs:]
+            print("Number of Objs in l_40TrackedObjs after del::" + str(len(self.l_40TrackedObjs)))
+            print("Number of Objs in l_buffCombinedObjs:: after del::" + str(len(self.l_buffCombinedObjs)))
+        if self.l_buffCombinedObjs:
+            print("l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
+            for i in range(n_combobjs):
+                self.l_40TrackedObjs.append(self.l_buffCombinedObjs[i])
+            # print("l_40TrackedObjs::type::elements" + str(type(self.l_40TrackedObjs)) +str(self.l_40TrackedObjs))
+            self.l_buffCombinedObjs.clear()
+        # print("Number of Objs in l_40TrackedObjs after append::" + str(len(self.l_40TrackedObjs)))
+            # print("Number of Objs in l_buffCombinedObjs::" + str(len(self.l_buffCombinedObjs)))
+            # print("44444444444 l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
             
+        # for i in range(n_alrcombobjs):
+        #     if 'AlreadyCombinedObj' == self.l_40TrackedObjs[i].s_creationobjflag:
+        #         self.l_40TrackedObjs.pop(i)
+           
         
     def __str__(self):
-        return "TrackedObjects:"+str(self.list_40TrackedObjects)
+        return "Class::TrackedObjects::"+str(self.l_40TrackedObjs)
 
 
-# In[4]:    
+# In[5]:    
 class TrackedObject(object):
     """docstring for TrackedObject"""
-    MAXCICLESALIVE = 10
-
 # class Missile(object):
 #   MAX_SPEED = 100  # all missiles accelerate up to this speed
 #   ACCELERATION = 5  # rate of acceleration per game frame
@@ -298,37 +395,40 @@ class TrackedObject(object):
         #super(TrackedObject, self).__init__()
         self.f_DistX = None
         self.f_DistY = None
-        self.f_DistAbs = None
+        self.f_DistAbs = 0
         self.f_Vabsx = None
         self.f_Vabsy = None
-        self.f_AccelX = None
-        self.f_AccelY = None
-        self.f_EgoSpeedClusterBased = None
-        self.f_EgoAccel = None
-        self.f_EgoSinYawA = None
-        self.f_EgoCosYawA = None
+        self.f_AccelX = 0
+        self.f_AccelY = 0
+        self.f_EgoSpeedClusterBased = 0
+        self.f_EgoAccel = 0
+        self.f_EgoSinYawA = 0
+        self.f_EgoCosYawA = 0
+        self.f_ObjLength = 0
+        self.f_ObjWidth = 0
         self.dt = None
         self.YawRate= None
-        self.MountingCenterX = None
-        self.MountingCenterY = None
+        self.MountingCenterX = 0
+        self.MountingCenterY = 0
 
         self.i_ClustersPerObject = []
-        self.f_probExist = None
-        self.f_probGhost = None
+        self.f_probExist = 0
+        self.f_probGhost = 0
         self.i_ObjectID = None
-        self.f_Priority = None
+        self.f_Priority = 0
         self.i_lifeciclescoutner = 0
-        self.s_isobjectalive = None # {'Alive','Dead'}
+        self.s_isobjcombinable = None # {'Combinable','No-Combinable'}
+        self.s_creationobjflag = None # {'NewObject', 'AlreadyCombinedObj', 'NewCombinedObject'}
         self.f_Kalman= Kalman()
 
-    def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior,EgoSpeedClusterBased,EgoAccel, EgoSinYawA, EgoCosYawA, dt,YawRate,MountingCenterX,MountingCenterY):
+    def set_createobject(self, newdisx, newdisy, newvabsx, newvabsy, newprior, EgoSpeedClusterBased, EgoAccel, EgoSinYawA, EgoCosYawA, dt, YawRate, MountingCenterX, MountingCenterY):
         self.f_DistX = newdisx
         self.f_DistY = newdisy
         self.f_Vabsx = newvabsx
         self.f_Vabsy = newvabsy
-        self.f_AccelX = None
-        self.f_AccelY = None
-        self.f_EgoSpeedClusterBased= EgoSpeedClusterBased
+        self.f_AccelX = 0
+        self.f_AccelY = 0
+        self.f_EgoSpeedClusterBased = EgoSpeedClusterBased
         self.f_EgoAccel = EgoAccel
         self.f_EgoSinYawA = EgoSinYawA
         self.f_EgoCosYawA = EgoCosYawA
@@ -342,11 +442,17 @@ class TrackedObject(object):
         # self.f_probGhost = None
         # self.i_ObjectID = None
         self.f_Priority = newprior
+    def set_isobjcombinableflag(self, newisobjcomb):
+        self.s_isobjcombinable = newisobjcomb
+
+    def set_creationobjflag(self, newcreatflag):
+        self.s_creationobjflag = newcreatflag
+
     def set_mergeobjects(self):
         pass
 
 
-# In[5]:
+# In[6]:
 class SampleClusters(object):
     """docstring for SampleClusters"""
     def __init__(self):

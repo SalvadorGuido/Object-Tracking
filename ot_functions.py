@@ -14,7 +14,6 @@ import os
 
 
 
-# In[4]:
 def cls():
     if os.name=='posix':
         !clear
@@ -55,7 +54,7 @@ def FunctionFilterClusters():
 
 def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLinfo):
     
-#    print("IN FUNCTION CREATE OBJECTS")
+    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
     R_ValidClustersObjects=[]
     L_nvalidclusters=len(valLeftClusters)
@@ -70,16 +69,33 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
         if valRightClusters[i].s_ValidObjectID == 'True':
             R_ValidClustersObjects.append(valRightClusters[i])
             
-    L_ValidClustersObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
+    L_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     #print(R_ValidClustersObjects[1].f_ObjectPriority)
     #print(L_ValidClustersObjects[1].f_ObjectPriority)
-    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
+    # print("l_trackedobj ")    
+    # print(l_trackedobj)
+    # l_trackedobj.set_update40TrackedObjs()
     l_trackedobj.set_lifecounterup()
+    # if L_ValidClustersObjects:
+    l_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
+    l_trackedobj.set_evalDistanceToEgo()
+    l_trackedobj.set_evalCombineObjs()
+    # l_trackedobj.set_update40TrackedObjs()
+
+
+    # r_trackedobj.set_update40TrackedObjs()
+    # if R_ValidClustersObjects:
+    #     r_trackedobj.set_createNewObjects(R_ValidClustersObjects, egoRInfo)
+    # r_trackedobj.set_lifecounterup()
+    # r_trackedobj.set_evalDistanceToEgo()
+    # r_trackedobj.set_evalCombineObjs()
+    # l_trackedobj.set_update40TrackedObjs()
     # print("in function FunctionCreateObjects ************************left")
-    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
-    r_trackedobj.set_lifecounterup()
-    # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
+    # r_trackedobj.set_createNewObjects(R_ValidClustersObjects, egoRInfo)
+    # r_trackedobj.set_lifecounterup()
+    # r_trackedobj.set_evalCombineObjs()
+    # # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
 
 
     # return L_ValidClustersObjects, R_ValidClustersObjects
@@ -95,17 +111,17 @@ def FunctionGraphicalInterface():
     return None
 
 
-# In[5]:
-
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
 
-CICLES_TO_RUN = 20
-DELAY_IN_S = 0.001
+CICLES_TO_RUN = 200
+DELAY_IN_S = 0.01
 
 for sample in range(CICLES_TO_RUN):
+    
     sleep(DELAY_IN_S)
-    cls()
+#    cls()
+    print("sample:" + str(sample))
 #    !clear
  #   sample = 200
     egoInfoLeft=ReadCsv.get_egoLeftInfoCluster(sample)
@@ -123,36 +139,37 @@ for sample in range(CICLES_TO_RUN):
 
     [valLeftClusters, valRightClusters]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     
-
-    [LTO, RTO]=FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
-    print("sample:" + str(sample))
-    if len(LeftTrackedObjects.list_40TrackedObjects) > 1:
+    # print("Number of validLClusters::type::elements" +str(len(valLeftClusters)) + "::" + str(type(valLeftClusters)) + "::" +str(valLeftClusters))
+    [LTO, RTO] = FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
+    # print("sample:" + str(sample))
+    
+    # if len(LeftTrackedObjects.l_40TrackedObjs) > 1:
         
-        print(LeftTrackedObjects.TRACKEDCOUNTER)
-        print(RightTrackedObjects.TRACKEDCOUNTER)
+    #     print(LeftTrackedObjects.TRACKEDCOUNTER)
+    #     print(RightTrackedObjects.TRACKEDCOUNTER)
 
-        print("LeftTrackedObjects kalman :" + str(sample))
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-        LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
-        print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-        print("RightTrackedObjects kalman:" + str(sample))
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-        RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
-        print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        # print("LeftTrackedObjects kalman :" + str(sample))
+        # LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+        # LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.OldStateVector(5)
+        # LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.RelativeVelocities()
+        # LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.AceleratioFramework()
+        # LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.KalmanFilter_Predict()
+        # print(LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.X)
+        # print("RightTrackedObjects kalman:" + str(sample))
+        # RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+        # RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.OldStateVector(5)
+        # RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.RelativeVelocities()
+        # RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.AceleratioFramework()
+        # RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.KalmanFilter_Predict()
+        # print(RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.X)
 
 #
-#LTO.list_40TrackedObjects[0].f_Kalman.Matrix_A_P_Q_H_R_I()
-#LTO.list_40TrackedObjects[0].f_Kalman.OldStateVector(5)
-#LTO.list_40TrackedObjects[0].f_Kalman.RelativeVelocities()
-#LTO.list_40TrackedObjects[0].f_Kalman.AceleratioFramework()
-#LTO.list_40TrackedObjects[0].f_Kalman.KalmanFilter_Predict()
-#print(LTO.list_40TrackedObjects[0].f_Kalman.P)
+#LTO.l_40TrackedObjs[0].f_Kalman.Matrix_A_P_Q_H_R_I()
+#LTO.l_40TrackedObjs[0].f_Kalman.OldStateVector(5)
+#LTO.l_40TrackedObjs[0].f_Kalman.RelativeVelocities()
+#LTO.l_40TrackedObjs[0].f_Kalman.AceleratioFramework()
+#LTO.l_40TrackedObjs[0].f_Kalman.KalmanFilter_Predict()
+#print(LTO.l_40TrackedObjs[0].f_Kalman.P)
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
     # for i in range (len(sorteda)):
     #     #print("###############################################")
@@ -164,7 +181,7 @@ for sample in range(CICLES_TO_RUN):
     #     print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
 
     # In[9]:
-    
+
     
 # valLeftClusters  = FunctionCreateClusters(egoRInfoi egoLInfo)[1]
 # valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
