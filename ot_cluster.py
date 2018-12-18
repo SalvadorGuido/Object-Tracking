@@ -174,8 +174,8 @@ class TrackedObjects(object):
     """docstring for TrackedObjects"""
     TRACKED_OBJS_CNTR = 0
     MAX_TRACKED_OBJS = 40
-    MAX_COMBINE_CICLES = 200
-    RAD_COMBINE = 1000.0
+    MAX_COMBINE_CICLES = 10
+    RAD_COMBINE = 5.0
 
     def __init__(self):
         #super(TrackedObjects, self).__init__()
@@ -257,7 +257,7 @@ class TrackedObjects(object):
                 
                 for i in range(n_newobjects):
                     newObject=TrackedObject()
-                    newObject.set_creationobjflag('NewObject')
+                    newObject.set_creationobjflag('NewObject') 
                     newObject.set_isobjcombinableflag('Combinable')
                     # newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_RangeRate, l_newobjs[i].f_Vrelx, l_newobjs[i].f_Vrely, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy,  l_newobjs[i].f_ObjectPriority)
                     newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy, l_newobjs[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
@@ -363,7 +363,7 @@ class TrackedObjects(object):
         self.temp_obj.f_probExist = None
         self.temp_obj.f_probGhost = None
         self.temp_obj.i_ObjectID = None
-        self.temp_obj.f_Priority = (obj_1.f_Priority + obj_2.f_Priority)/2
+        self.temp_obj.f_Priority = max(obj_1.f_Priority, obj_2.f_Priority)*0.7 + min(obj_1.f_Priority, obj_2.f_Priority)*0.3
         self.temp_obj.i_lifeciclescoutner = min(obj_1.i_lifeciclescoutner, obj_2.i_lifeciclescoutner)
         self.temp_obj.s_isobjcombinable = 'Combinable'
         self.temp_obj.s_creationobjflag = 'NewCombinedObject' #{'NewObject', 'AlreadyCombinedObj', 'NewCombinedObject'}
@@ -385,7 +385,8 @@ class TrackedObjects(object):
         # print(self.l_buffCombinedObjs)
         # if self.l_40TrackedObjs:
         n_alrcombobjs = len([p for p in self.l_40TrackedObjs if p.s_creationobjflag == 'AlreadyCombinedObj']) ###Number of objects already combined
-        n_combobjs = len(self.l_buffCombinedObjs) ###Number of elements in buffer l_buffCombinedObjs
+        n_new_combobjs = len(self.l_buffCombinedObjs) ###Number of elements in buffer l_buffCombinedObjs
+
         if n_alrcombobjs > 0:
             print("Number of AlreadyCombinedObj::" + str(n_alrcombobjs))
             print("Number of Objs in l_40TrackedObjs before del::" + str(len(self.l_40TrackedObjs)))
@@ -394,15 +395,21 @@ class TrackedObjects(object):
             del self.l_40TrackedObjs[-n_alrcombobjs:]
             print("Number of Objs in l_40TrackedObjs after del::" + str(len(self.l_40TrackedObjs)))
             print("Number of Objs in l_buffCombinedObjs:: after del::" + str(len(self.l_buffCombinedObjs)))
-        if self.l_buffCombinedObjs:
-            print("l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
-            for i in range(n_combobjs):
-                self.l_40TrackedObjs.append(self.l_buffCombinedObjs[i])
-            # print("l_40TrackedObjs::type::elements" + str(type(self.l_40TrackedObjs)) +str(self.l_40TrackedObjs))
-            self.l_buffCombinedObjs.clear()
+        self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
+        self.l_buffCombinedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)
+        if (self.TRACKED_OBJS_CNTR == self.MAX_TRACKED_OBJS) and (n_new_combobjs > 0):
+        	del self.l_40TrackedObjs[-1:]
+        	self.l_40TrackedObjs.append(self.l_buffCombinedObjs[0])
+        elif self.l_buffCombinedObjs and (self.TRACKED_OBJS_CNTR < self.MAX_TRACKED_OBJS):
+        	for j in range(self.MAX_TRACKED_OBJS - self.TRACKED_OBJS_CNTR):
+        		print("l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
+        		self.l_40TrackedObjs.append(self.l_buffCombinedObjs[j])            
+            	
+        # print("l_40TrackedObjs::type::elements" + str(type(self.l_40TrackedObjs)) +str(self.l_40TrackedObjs))
+        # self.l_buffCombinedObjs.clear()
         # print("Number of Objs in l_40TrackedObjs after append::" + str(len(self.l_40TrackedObjs)))
-            # print("Number of Objs in l_buffCombinedObjs::" + str(len(self.l_buffCombinedObjs)))
-            # print("44444444444 l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
+        #     print("Number of Objs in l_buffCombinedObjs::" + str(len(self.l_buffCombinedObjs)))
+        #     print("44444444444 l_buffCombinedObjs::type::elements" + str(type(self.l_buffCombinedObjs)) +str(self.l_buffCombinedObjs))
             
         # for i in range(n_alrcombobjs):
         #     if 'AlreadyCombinedObj' == self.l_40TrackedObjs[i].s_creationobjflag:
