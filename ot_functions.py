@@ -20,7 +20,7 @@ def cls():
     else:
         !clc
      
-    
+
 def FunctionReadData(sample):
     vClusters=ReadCsv.get_nofValidClusters(sample)
     return vClusters
@@ -78,10 +78,11 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
     # l_trackedobj.set_update40TrackedObjs()
     l_trackedobj.set_lifecounterup()
     # if L_ValidClustersObjects:
-    l_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
+    l_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
+    # l_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
     l_trackedobj.set_evalDistanceToEgo()
     l_trackedobj.set_evalCombineObjs()
-    # l_trackedobj.set_update40TrackedObjs()
+    l_trackedobj.set_update40TrackedObjs()
 
 
     # r_trackedobj.set_update40TrackedObjs()
@@ -114,13 +115,13 @@ def FunctionGraphicalInterface():
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
 
-CICLES_TO_RUN = 200
+CICLES_TO_RUN = 50
 DELAY_IN_S = 0.01
 
 for sample in range(CICLES_TO_RUN):
     
-    sleep(DELAY_IN_S)
-#    cls()
+#    sleep(DELAY_IN_S)
+    cls()
     print("sample:" + str(sample))
 #    !clear
  #   sample = 200

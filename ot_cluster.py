@@ -172,10 +172,10 @@ class Cluster(object):
 # In[4]:
 class TrackedObjects(object):
     """docstring for TrackedObjects"""
-    TRACKEDCOUNTER = 0
-    MAXTRACKEDOBJECTS = 40
-    MAXCICLESALIVE = 10
-    RADIOTOCOMBINE = 2.0
+    TRACKED_OBJS_CNTR = 0
+    MAX_TRACKED_OBJS = 40
+    MAX_COMBINE_CICLES = 200
+    RAD_COMBINE = 1000.0
 
     def __init__(self):
         #super(TrackedObjects, self).__init__()
@@ -189,9 +189,9 @@ class TrackedObjects(object):
         # print("##########INSIDE set_lifecounterup") 
         for i in range(len(self.l_40TrackedObjs)):
             self.l_40TrackedObjs[i].i_lifeciclescoutner += 1
-            if (10 == self.l_40TrackedObjs[i].i_lifeciclescoutner):
+            if (self.MAX_COMBINE_CICLES == self.l_40TrackedObjs[i].i_lifeciclescoutner):
                 self.l_40TrackedObjs[i].s_isobjcombinable = 'No-Combinable'
-            elif(10 > self.l_40TrackedObjs[i].i_lifeciclescoutner):
+            elif(self.MAX_COMBINE_CICLES > self.l_40TrackedObjs[i].i_lifeciclescoutner):
                 self.l_40TrackedObjs[i].s_isobjcombinable = 'Combinable'
 
     def eval_distance(self, obj_1, obj_2):
@@ -204,25 +204,56 @@ class TrackedObjects(object):
         if self.l_40TrackedObjs: #     #### eval distance between ego and each object in l_40TrackedObjs
             for i in range(n_objects):
                 self.l_40TrackedObjs[i].f_DistAbs = np.sqrt(np.power(self.l_40TrackedObjs[i].f_DistY, 2) + np.power(self.l_40TrackedObjs[i].f_DistX, 2))   
+
+    def set_createNewObjects_v2(self, l_clusterstocreate, egoInfo):
+        self.TRACKED_OBJS_CNTR
+        if self.l_40TrackedObjs:
+        	self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)
+
+        if l_clusterstocreate:
+            if self.TRACKED_OBJS_CNTR == self.MAX_TRACKED_OBJS:
+                
+                del self.l_40TrackedObjs[-1:]
+                newObject=TrackedObject()
+                newObject.set_creationobjflag('NewObject')
+                newObject.set_isobjcombinableflag('Combinable')
+                # newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_RangeRate, l_newobjs[i].f_Vrelx, l_newobjs[i].f_Vrely, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy,  l_newobjs[i].f_ObjectPriority)
+                newObject.set_createobject(l_clusterstocreate[0].f_DistX, l_clusterstocreate[0].f_DistY, l_clusterstocreate[0].f_Vabsx, l_clusterstocreate[0].f_Vabsy, l_clusterstocreate[0].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)                  
+                self.l_40TrackedObjs.append(newObject)
+            elif self.TRACKED_OBJS_CNTR < self.MAX_TRACKED_OBJS:
+                n_objs_to_insert = len(l_clusterstocreate)
+                for i in range(n_objs_to_insert):
+                    self.TRACKED_OBJS_CNTR += 1
+                    newObject=TrackedObject()
+                    newObject.set_creationobjflag('NewObject')
+                    newObject.set_isobjcombinableflag('Combinable')
+                    # newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_RangeRate, l_newobjs[i].f_Vrelx, l_newobjs[i].f_Vrely, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy,  l_newobjs[i].f_ObjectPriority)
+                    newObject.set_createobject(l_clusterstocreate[i].f_DistX, l_clusterstocreate[i].f_DistY, l_clusterstocreate[i].f_Vabsx, l_clusterstocreate[i].f_Vabsy, l_clusterstocreate[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
+                    egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)                  
+                    if len(self.l_40TrackedObjs) < self.MAX_TRACKED_OBJS:
+                    	self.l_40TrackedObjs.append(newObject)
+                    
+        self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)            
     
     def set_createNewObjects(self, l_newobjs, egoInfo):
         ### receives sorted list of clusters to be objects, creates new TrackedObject() and append it to l_40TrackedObjs
         ### sorts l_40TrackedObjs based on probability
-        print("##########INSIDE set_createNewObjects ")
-        print("Number of l_40TrackedObjs::type::elements" +str(len(self.l_40TrackedObjs)) + "::" + str(type(self.l_40TrackedObjs)) + "::" +str(self.l_40TrackedObjs))
-        print("Number of l_newobjs::type::elements" +str(len(l_newobjs)) + "::" + str(type(l_newobjs)) + "::" +str(l_newobjs))
+        # print("##########INSIDE set_createNewObjects ")
+        # print("Number of l_40TrackedObjs::type::elements" +str(len(self.l_40TrackedObjs)) + "::" + str(type(self.l_40TrackedObjs)) + "::" +str(self.l_40TrackedObjs))
+        # print("Number of l_newobjs::type::elements" +str(len(l_newobjs)) + "::" + str(type(l_newobjs)) + "::" +str(l_newobjs))
         n_newobjects = len(l_newobjs)
-        self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
+        self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
         # if self.l_40TrackedObjs:
             # print("NOT EMPTY l_40TrackedObjs")
             # print("Number of l_40TrackedObjs::type::elements" +str(len(self.l_40TrackedObjs)) + "::" + str(type(self.l_40TrackedObjs)) + "::" +str(self.l_40TrackedObjs))
             # self.l_40TrackedObjs.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
         if l_newobjs:
             # print("NOT EMPTY l_newobjs")
-            if (self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER) >= n_newobjects:
-                # self.TRACKEDCOUNTER += n_newobjects
-                print("abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER))" + str(abs((self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER))))
-                print("n_newobjects" + str(n_newobjects))
+            if (self.MAX_TRACKED_OBJS - self.TRACKED_OBJS_CNTR) >= n_newobjects:
+                # self.TRACKED_OBJS_CNTR += n_newobjects
+                # print("abs((self.MAX_TRACKED_OBJS - self.TRACKED_OBJS_CNTR))" + str(abs((self.MAX_TRACKED_OBJS - self.TRACKED_OBJS_CNTR))))
+                # print("n_newobjects" + str(n_newobjects))
                 
                 for i in range(n_newobjects):
                     newObject=TrackedObject()
@@ -232,20 +263,20 @@ class TrackedObjects(object):
                     newObject.set_createobject(l_newobjs[i].f_DistX, l_newobjs[i].f_DistY, l_newobjs[i].f_Vabsx, l_newobjs[i].f_Vabsy, l_newobjs[i].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
                         egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)                  
                     self.l_40TrackedObjs.append(newObject)
-                    self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
-                    print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+                    self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
+                    # print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
 
                 # print("line 207 Number of Objects in l_40TrackedObjs if " + str(len(self.l_40TrackedObjs)))
                 # print("line 208 Number of new objects if " + str(len(l_newobjs)) + "::type::" + str(type(l_newobjs)))
                 # print(self.l_40TrackedObjs)
                 self.l_40TrackedObjs.sort(reverse = True,  key= lambda TrackedObject: TrackedObject.f_Priority)
 
-                # print("Counter in class if true " + str(self.TRACKEDCOUNTER))
+                # print("Counter in class if true " + str(self.TRACKED_OBJS_CNTR))
             else:
                 
-                # self.TRACKEDCOUNTER += n_toinsert
-                self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
-                if self.MAXTRACKEDOBJECTS == self.TRACKEDCOUNTER:
+                # self.TRACKED_OBJS_CNTR += n_toinsert
+                self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
+                if self.MAX_TRACKED_OBJS == self.TRACKED_OBJS_CNTR:
                     del self.l_40TrackedObjs[-1:]
                     newObject=TrackedObject()
                     newObject.set_creationobjflag('NewObject')
@@ -254,10 +285,10 @@ class TrackedObjects(object):
                     newObject.set_createobject(l_newobjs[0].f_DistX, l_newobjs[0].f_DistY, l_newobjs[0].f_Vabsx, l_newobjs[0].f_Vabsy, l_newobjs[0].f_ObjectPriority, egoInfo.f_EgoSpeedClusterBased,
                         egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                     self.l_40TrackedObjs.append(newObject)
-                    self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
-                    print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
-                elif self.MAXTRACKEDOBJECTS > self.TRACKEDCOUNTER:
-                    n_toinsert = self.MAXTRACKEDOBJECTS - self.TRACKEDCOUNTER
+                    self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
+                    # print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+                elif self.MAX_TRACKED_OBJS > self.TRACKED_OBJS_CNTR:
+                    n_toinsert = self.MAX_TRACKED_OBJS - self.TRACKED_OBJS_CNTR
                     for i in range(n_toinsert):
                         newObject=TrackedObject()
                         newObject.set_creationobjflag('NewObject')
@@ -267,12 +298,12 @@ class TrackedObjects(object):
                             egoInfo.f_EgoAccel, egoInfo.f_EgoSinYawA, egoInfo.f_EgoCosYawA, egoInfo.dt, egoInfo.YawRate, egoInfo.MountingtoCenterX, egoInfo.MountingtoCenterY)
                         # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                         self.l_40TrackedObjs.append(newObject)
-                        self.TRACKEDCOUNTER = len(self.l_40TrackedObjs)
-                        print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
+                        self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
+                        # print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
                 # print("line 233 Number of Objects in l_40TrackedObjs else" + str(len(self.l_40TrackedObjs)))
                 # print("line 234 Number of new objects else " + str(len(l_newobjs)) + "::type::" + str(type(l_newobjs)))
                 self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)
-                # print("line 236Tracked Objects Counter " + str(self.TRACKEDCOUNTER))
+                # print("line 236Tracked Objects Counter " + str(self.TRACKED_OBJS_CNTR))
         # else:
         #     pass# print("INSIDE set_createNewObjects EMPTY ARGUMENT")
 
@@ -284,20 +315,23 @@ class TrackedObjects(object):
         # if self.l_40TrackedObjs:     
         for p in range(n_objects):
             for j in range(n_objects):
-                if p < j:
+                if (p < j) and ('AlreadyCombinedObj' != self.l_40TrackedObjs[p].s_creationobjflag) and ('AlreadyCombinedObj' != self.l_40TrackedObjs[j].s_creationobjflag):
                     self.eval_distance(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
-                    print("Distance between objects " + str(round(self.d_objects,4)) + "::" + str(p) + "::" + str(j))  
-                    print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[p].s_isobjcombinable))
-                    print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[j].s_isobjcombinable))  
-                    if (self.d_objects <= self.RADIOTOCOMBINE) and ('Combinable' == self.l_40TrackedObjs[p].s_isobjcombinable) and ('Combinable' == self.l_40TrackedObjs[j].s_isobjcombinable):
-                        print("NewCombinedObject, Number of l_buffCombinedObjs before::" + str(len(self.l_buffCombinedObjs)))
+                    # print("OBJECTS EVALUATED::" + str(p) + "::" + str(j))
+                    # print("Number of tracked objs in l_40TrackedObjs :::::" + str(len(self.l_40TrackedObjs)))
+                    # print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
+                    # print("Distance between objects " + str(round(self.d_objects,4)))
+                    # print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[p].s_isobjcombinable))
+                    # print("Obj(j) s_isobjcombinable " + str(self.l_40TrackedObjs[j].s_isobjcombinable))  
+                    if (self.d_objects <= self.RAD_COMBINE) and ('Combinable' == self.l_40TrackedObjs[p].s_isobjcombinable) and ('Combinable' == self.l_40TrackedObjs[j].s_isobjcombinable):
+                        # print("NewCombinedObject, Number of l_buffCombinedObjs before::" + str(len(self.l_buffCombinedObjs)))
                         self.set_createCombinedObjs(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
                         # print("NewCombinedObject, Number of l_buffCombinedObjs after::" + str(len(self.l_buffCombinedObjs)))  
-
+        
     def set_createCombinedObjs(self, obj_1, obj_2):
-        print("##########INSIDE set_createCombinedObjs") 
-        print("Number of tracked objs in l_40TrackedObjs ::" + str(len(self.l_40TrackedObjs)))
-        print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
+        # print("##########INSIDE set_createCombinedObjs") 
+        # print("Number of tracked objs in l_40TrackedObjs ::" + str(len(self.l_40TrackedObjs)))
+        # print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
             
         # print("INDEX TO REMOVE " + str(indexremove))
         # print("INDEX TO INSERT " + str(indexinsert))
@@ -376,7 +410,7 @@ class TrackedObjects(object):
            
         
     def __str__(self):
-        return "Class::TrackedObjects::"+str(self.l_40TrackedObjs)
+        return "Class::TrackedObjects::N Tracked Objects"+str(len(self.l_40TrackedObjs))
 
 
 # In[5]:    
