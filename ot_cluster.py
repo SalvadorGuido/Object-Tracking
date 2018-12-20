@@ -179,7 +179,7 @@ class TrackedObjects(object):
     CONT_FACT_PRIO = 100
     CONT_FACT_LIFE = 1
     CONT_FACT_DIST = 0.25/7.7
-    CONT_THRSH = 30
+    CONT_THRSH = 45
 
     def __init__(self):
         #super(TrackedObjects, self).__init__()
@@ -211,11 +211,7 @@ class TrackedObjects(object):
         self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_probExist)
         if innercounter > 0:
         	del self.l_40TrackedObjs[-innercounter:]
-        		# self.l_40TrackedObjs[i].f_probExist = 100*(0.25*self.l_40TrackedObjs[i].f_Priority/self.CONT_FACT_PRIO + 0.5*self.CONT_FACT_LIFE/(self.l_40TrackedObjs[i].i_lifeciclescoutner+1) + (0.4 - np.sqrt(self.l_40TrackedObjs[i].f_DistAbs)*self.CONT_FACT_DIST))
-        		
-        
-
-
+        	# self.l_40TrackedObjs[i].f_probExist = 100*(0.25*self.l_40TrackedObjs[i].f_Priority/self.CONT_FACT_PRIO + 0.5*self.CONT_FACT_LIFE/(self.l_40TrackedObjs[i].i_lifeciclescoutner+1) + (0.4 - np.sqrt(self.l_40TrackedObjs[i].f_DistAbs)*self.CONT_FACT_DIST))
             # # if (self.MAX_COMBINE_CICLES == self.l_40TrackedObjs[i].i_lifeciclescoutner):
             #     self.l_40TrackedObjs[i].s_isobjcombinable = 'No-Combinable'
             # elif(self.MAX_COMBINE_CICLES > self.l_40TrackedObjs[i].i_lifeciclescoutner):
@@ -328,13 +324,7 @@ class TrackedObjects(object):
                         # newObject.eval_kinematics(egoRinfo.f_EgoSpeedClusterBased)            
                         self.l_40TrackedObjs.append(newObject)
                         self.TRACKED_OBJS_CNTR = len(self.l_40TrackedObjs)
-                        # print("Number of l_40TrackedObjs" +str(len(self.l_40TrackedObjs)))
-                # print("line 233 Number of Objects in l_40TrackedObjs else" + str(len(self.l_40TrackedObjs)))
-                # print("line 234 Number of new objects else " + str(len(l_newobjs)) + "::type::" + str(type(l_newobjs)))
                 self.l_40TrackedObjs.sort(reverse = True,  key = lambda TrackedObject: TrackedObject.f_Priority)
-                # print("line 236Tracked Objects Counter " + str(self.TRACKED_OBJS_CNTR))
-        # else:
-        #     pass# print("INSIDE set_createNewObjects EMPTY ARGUMENT")
 
 
     def set_evalCombineObjs(self):
@@ -346,24 +336,12 @@ class TrackedObjects(object):
             for j in range(n_objects):
                 if (p < j) and ('AlreadyCombinedObj' != self.l_40TrackedObjs[p].s_creationobjflag) and ('AlreadyCombinedObj' != self.l_40TrackedObjs[j].s_creationobjflag):
                     self.eval_distance(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
-                    # print("OBJECTS EVALUATED::" + str(p) + "::" + str(j))
-                    # print("Number of tracked objs in l_40TrackedObjs :::::" + str(len(self.l_40TrackedObjs)))
-                    # print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
-                    # print("Distance between objects " + str(round(self.d_objects,4)))
-                    # print("Obj(p) s_isobjcombinable " + str(self.l_40TrackedObjs[p].s_isobjcombinable))
-                    # print("Obj(j) s_isobjcombinable " + str(self.l_40TrackedObjs[j].s_isobjcombinable))  
                     if (self.d_objects <= self.RAD_COMBINE) and ('Combinable' == self.l_40TrackedObjs[p].s_isobjcombinable) and ('Combinable' == self.l_40TrackedObjs[j].s_isobjcombinable):
                         # print("NewCombinedObject, Number of l_buffCombinedObjs before::" + str(len(self.l_buffCombinedObjs)))
                         self.set_createCombinedObjs(self.l_40TrackedObjs[p], self.l_40TrackedObjs[j])
                         # print("NewCombinedObject, Number of l_buffCombinedObjs after::" + str(len(self.l_buffCombinedObjs)))  
         
     def set_createCombinedObjs(self, obj_1, obj_2):
-        # print("##########INSIDE set_createCombinedObjs") 
-        # print("Number of tracked objs in l_40TrackedObjs ::" + str(len(self.l_40TrackedObjs)))
-        # print("Number of tracked objs in l_buffCombinedObjs ::" + str(len(self.l_buffCombinedObjs)))
-            
-        # print("INDEX TO REMOVE " + str(indexremove))
-        # print("INDEX TO INSERT " + str(indexinsert))
         obj_1.set_isobjcombinableflag('No-Combinable')
         obj_2.set_isobjcombinableflag('No-Combinable')
         obj_1.set_creationobjflag('AlreadyCombinedObj')
@@ -398,14 +376,7 @@ class TrackedObjects(object):
         self.temp_obj.s_creationobjflag = 'NewCombinedObject' #{'NewObject', 'AlreadyCombinedObj', 'NewCombinedObject'}
         self.temp_obj.f_Kalman = Kalman()
         self.l_buffCombinedObjs.append(self.temp_obj)
-        # if indexinsert > indexremove:
-        #     self.l_40TrackedObjs.pop(indexremove)
-        #     self.l_40TrackedObjs.insert(indexinsert - 1, self.temp_obj)
-        #     self.l_40TrackedObjs.pop(indexinsert)
-        # elif indexinsert < indexremove:
-        #     self.l_40TrackedObjs.pop(indexremove)
-        #     self.l_40TrackedObjs.insert(indexinsert, self.temp_obj)
-        #     self.l_40TrackedObjs.pop(indexinsert + 1)        
+       
 
     def set_update40TrackedObjs(self):
         # print("##########INSIDE set_update40TrackedObjs") 

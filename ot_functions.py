@@ -68,21 +68,20 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
             
     L_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
+    
     l_trackedobj.set_lifecounterup()
     l_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
-    # l_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
     l_trackedobj.set_evalDistanceToEgo()
     l_trackedobj.set_evalCombineObjs()
     l_trackedobj.set_update40TrackedObjs()
     l_trackedobj.set_evalContinuityObjs()
 
-#    r_trackedobj.set_lifecounterup()
-#    r_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
-#    # r_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
-#    r_trackedobj.set_evalDistanceToEgo()
-#    r_trackedobj.set_evalCombineObjs()
-#    r_trackedobj.set_update40TrackedObjs()
-##    r_trackedobj.set_evalContinuityObjs()
+    r_trackedobj.set_lifecounterup()
+    r_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
+    r_trackedobj.set_evalDistanceToEgo()
+    r_trackedobj.set_evalCombineObjs()
+    r_trackedobj.set_update40TrackedObjs()
+    r_trackedobj.set_evalContinuityObjs()
     return l_trackedobj, r_trackedobj
 
 def FunctionMergeObjects():
@@ -98,9 +97,9 @@ def FunctionGraphicalInterface():
 LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
 
-CICLES_TO_RUN = 50
+#CICLES_TO_RUN = 4885
 #DELAY_IN_S = 0.25
-
+CICLES_TO_RUN = 50
 for sample in range(CICLES_TO_RUN):
     
     sleep(DELAY_IN_S)
@@ -163,20 +162,3 @@ for sample in range(CICLES_TO_RUN):
     # for i in range (len(sortedb)):
     #     #print("+++++++++++++++++++++++++++++++++++++++++++++++")
     #     print("Right objects:" + str(sortedb[i].f_ObjectPriority) + "No of objects " + str(len(sortedb)))
-
-    # In[9]:
-
-    
-# valLeftClusters  = FunctionCreateClusters(egoRInfoi egoLInfo)[1]
-# valRightClusters = FunctionCreateClusters(egoRInfo, egoLInfo)[0]
-
-
-# a=len (valRightClusters)
-# for i in range (a):
-#     if valRightClusters[i].s_ValidObjectID == 'True':
-#         print(valRightClusters[i].s_ValidObjectID)
-
-# a=len (valLeftClusters)
-# for i in range (a):
-#     if valLeftClusters[i].s_ValidObjectID == 'True':
-#         print(valLeftClusters[i].s_ValidObjectID)
