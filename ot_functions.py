@@ -53,8 +53,6 @@ def FunctionFilterClusters():
     return None
 
 def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_trackedobj, egoRInfo, egoLinfo):
-    
-    print("IN FUNCTION CREATE OBJECTS")
     L_ValidClustersObjects=[]
     R_ValidClustersObjects=[]
     L_nvalidclusters=len(valLeftClusters)
@@ -64,42 +62,27 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
         if valLeftClusters[i].s_ValidObjectID == 'True':
             L_ValidClustersObjects.append(valLeftClusters[i])
             
-
     for i in range (R_nvalidclusters):
         if valRightClusters[i].s_ValidObjectID == 'True':
             R_ValidClustersObjects.append(valRightClusters[i])
             
     L_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
-    #print(R_ValidClustersObjects[1].f_ObjectPriority)
-    #print(L_ValidClustersObjects[1].f_ObjectPriority)
-    # print("l_trackedobj ")    
-    # print(l_trackedobj)
-    # l_trackedobj.set_update40TrackedObjs()
     l_trackedobj.set_lifecounterup()
-    # if L_ValidClustersObjects:
     l_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
     # l_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
     l_trackedobj.set_evalDistanceToEgo()
     l_trackedobj.set_evalCombineObjs()
     l_trackedobj.set_update40TrackedObjs()
+    l_trackedobj.set_evalContinuityObjs()
 
-
-    # r_trackedobj.set_update40TrackedObjs()
-    # if R_ValidClustersObjects:
-    #     r_trackedobj.set_createNewObjects(R_ValidClustersObjects, egoRInfo)
-    # r_trackedobj.set_lifecounterup()
-    # r_trackedobj.set_evalDistanceToEgo()
-    # r_trackedobj.set_evalCombineObjs()
-    # l_trackedobj.set_update40TrackedObjs()
-    # print("in function FunctionCreateObjects ************************left")
-    # r_trackedobj.set_createNewObjects(R_ValidClustersObjects, egoRInfo)
-    # r_trackedobj.set_lifecounterup()
-    # r_trackedobj.set_evalCombineObjs()
-    # # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
-
-
-    # return L_ValidClustersObjects, R_ValidClustersObjects
+#    r_trackedobj.set_lifecounterup()
+#    r_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
+#    # r_trackedobj.set_createNewObjects(L_ValidClustersObjects, egoLInfo)
+#    r_trackedobj.set_evalDistanceToEgo()
+#    r_trackedobj.set_evalCombineObjs()
+#    r_trackedobj.set_update40TrackedObjs()
+##    r_trackedobj.set_evalContinuityObjs()
     return l_trackedobj, r_trackedobj
 
 def FunctionMergeObjects():
@@ -116,11 +99,11 @@ LeftTrackedObjects = ot_cluster.TrackedObjects()
 RightTrackedObjects = ot_cluster.TrackedObjects()
 
 CICLES_TO_RUN = 50
-DELAY_IN_S = 0.01
+#DELAY_IN_S = 0.25
 
 for sample in range(CICLES_TO_RUN):
     
-#    sleep(DELAY_IN_S)
+    sleep(DELAY_IN_S)
     cls()
     print("sample:" + str(sample))
 #    !clear
