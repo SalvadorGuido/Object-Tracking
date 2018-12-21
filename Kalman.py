@@ -13,7 +13,7 @@ class Kalman: # Definición de clase, class name_of_the_class
         self.Ax = None
         self.Ay = None 
         ######### Initial Values #############
-        self.Dt = None 
+        self.Dt = 0.04 
         self.YawRate = None
         self.cosYawAngle = None 
         self.sinYawAngle = None
@@ -95,7 +95,7 @@ class Kalman: # Definición de clase, class name_of_the_class
         self.SignedEgoAcel = egoAccel
         self.PNC = 2.25 
         self.InitValOfP = 1000
-        self.FA = 1-(0.3*self.Dt) 
+        self.FA = 1-(0.3*0.04) 
         self.X = array([self.x,self.Vx,self.Ax,self.y,self.Vy,self.Ay]) 
 
 

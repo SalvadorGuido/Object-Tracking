@@ -63,12 +63,12 @@ def data_object(sample):
     if sample>2:
         [rightObjects, leftObjects] = get_objectsList(sample)
         objectsPatch=[]
-        for obj in range(len(rightObjects.list_40TrackedObjects)):
-            rect = Rectangle((-rightObjects.list_40TrackedObjects[obj].f_DistY, rightObjects.list_40TrackedObjects[obj].f_DistX), 1.9, 4)
+        for obj in range(len(rightObjects.l_40TrackedObjs)):
+            rect = Rectangle((-rightObjects.l_40TrackedObjs[obj].f_DistY, rightObjects.l_40TrackedObjs[obj].f_DistX), 1.9, 4)
             objectsPatch.append(rect)
     
-        for obj in range(len(leftObjects.list_40TrackedObjects)):
-            rect = Rectangle((-leftObjects.list_40TrackedObjects[obj].f_DistY, leftObjects.list_40TrackedObjects[obj].f_DistX), 1.9, 4)
+        for obj in range(len(leftObjects.l_40TrackedObjs)):
+            rect = Rectangle((-leftObjects.l_40TrackedObjs[obj].f_DistY, leftObjects.l_40TrackedObjs[obj].f_DistX), 1.9, 4)
             objectsPatch.append(rect)
         ObjCollection = PatchCollection(objectsPatch, facecolor='r', alpha=0.3,
                          edgecolor='None')
@@ -85,7 +85,9 @@ def plotter():
     global a, ax
     
     ax.cla()
-    ax.grid()            
+    ax.grid()
+    ax.set_xlabel("Y axis")
+    ax.set_ylabel("X axis")          
     [x,y, co] = data_points(a)
     
     #print(np.shape(x),np.shape(y),np.shape(co))
@@ -128,8 +130,8 @@ def vp_StartButton_gui():
     createObjectsLists()
     
     ax = fi.add_subplot(111)
-    ax.set_xlabel("X axis")
-    ax.set_ylabel("Y axis")
+    ax.set_xlabel("Y axis")
+    ax.set_ylabel("X axis")
     ax.set_xlim(-50, 50)
     ax.set_ylim(-50,50)
     ax.grid()
@@ -172,7 +174,7 @@ class Toplevel1:
 
         self.Status = tk.Label(top)
         self.Status.place(relx=0.0, rely=0.0, height=768, width=1366)
-        self._img1 = tk.PhotoImage(file='./fondo3.png')
+        self._img1 = tk.PhotoImage(file='./fondo4.png')
         self.Status.configure(image=self._img1)
         #self.Status.configure(justify=LEFT)
         self.Status.configure(text='''Label''')
@@ -180,8 +182,8 @@ class Toplevel1:
         self.Status.configure(height=768)
 
         self.Frame1 = tk.Frame(top)
-        self.Frame1.place(relx=0.0, rely=0.0, relheight=0.7
-                , relwidth=0.538)
+        self.Frame1.place(relx=0.1, rely=0.15, relheight=0.8
+                , relwidth=0.65)
         self.Frame1.configure(relief='groove')
         self.Frame1.configure(borderwidth="2")
         self.Frame1.configure(relief='groove')
@@ -199,7 +201,7 @@ class Toplevel1:
         self.frame.canvas.draw_idle()
 
         self.StartButton = tk.Button(top)
-        self.StartButton.place(relx=0.04, rely=0.75, height=75, width=150)
+        self.StartButton.place(relx=0.8, rely=0.3, height=75, width=150)
         self.StartButton.configure(activebackground="#000000")
         self.StartButton.configure(activeforeground="#000000")
         self.StartButton.configure(background="#d9d9d9")
@@ -214,7 +216,7 @@ class Toplevel1:
         self.StartButton.configure(command=change_state)
 
         self.StopButton = tk.Button(top)
-        self.StopButton.place(relx=0.19, rely=0.75, height=75, width=75)
+        self.StopButton.place(relx=0.83, rely=0.6, height=75, width=75)
         self.StopButton.configure(activebackground="#000000")
         self.StopButton.configure(activeforeground="#000000")
         self.StopButton.configure(background="#d9d9d9")
@@ -229,7 +231,7 @@ class Toplevel1:
         self.StopButton.configure(command=stopFunction)
 
         self.Button1 = tk.Button(top)
-        self.Button1.place(relx=0.3, rely=0.75, height=75, width=75)
+        self.Button1.place(relx=0.83, rely=0.45, height=75, width=75)
         self.Button1.configure(activebackground="#000000")
         self.Button1.configure(activeforeground="#000000")
         self.Button1.configure(background="#d9d9d9")

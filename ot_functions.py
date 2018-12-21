@@ -70,17 +70,19 @@ def FunctionCreateObjects(valLeftClusters, valRightClusters, l_trackedobj, r_tra
             
     L_ValidClustersObjects.sort(reverse = True,  key= lambda Cluster: Cluster.f_ObjectPriority)
     R_ValidClustersObjects.sort(reverse = True, key= lambda Cluster: Cluster.f_ObjectPriority)
-    #print(R_ValidClustersObjects[1].f_ObjectPriority)
-    #print(L_ValidClustersObjects[1].f_ObjectPriority)
-    l_trackedobj.set_insertNewObjects(L_ValidClustersObjects, egoLInfo)
     l_trackedobj.set_lifecounterup()
-    # print("in function FunctionCreateObjects ************************left")
-    r_trackedobj.set_insertNewObjects(R_ValidClustersObjects, egoRInfo)
+    l_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
+    l_trackedobj.set_evalDistanceToEgo()
+    l_trackedobj.set_evalCombineObjs()
+    l_trackedobj.set_update40TrackedObjs()
+    l_trackedobj.set_evalContinuityObjs()
+
     r_trackedobj.set_lifecounterup()
-    # print("in function FunctionCreateObjects &&&&&&&&&&&&&&  Right")
-
-
-    # return L_ValidClustersObjects, R_ValidClustersObjects
+    r_trackedobj.set_createNewObjects_v2(L_ValidClustersObjects, egoLInfo)
+    r_trackedobj.set_evalDistanceToEgo()
+    r_trackedobj.set_evalCombineObjs()
+    r_trackedobj.set_update40TrackedObjs()
+    r_trackedobj.set_evalContinuityObjs()
     return l_trackedobj, r_trackedobj
 
 # In[5]:
@@ -126,27 +128,27 @@ def get_objectsList(sample) :
 
     [valRightClusters, valLeftClusters, dynRClus, dynLClus]  = FunctionCreateClusters(sample, egoRInfo, egoLInfo)
     FunctionCreateObjects(valLeftClusters, valRightClusters, LeftTrackedObjects, RightTrackedObjects, egoRInfo, egoLInfo)
-    if len(LeftTrackedObjects.list_40TrackedObjects) > 0:
+    if len(LeftTrackedObjects.l_40TrackedObjs) > 0:
     
         #print(LeftTrackedObjects.TRACKEDCOUNTER)
         #print("LeftTrackedObjects kalman :" + str(sample))
-        for leftObject in range(len(LeftTrackedObjects.list_40TrackedObjects)):
-            LeftTrackedObjects.list_40TrackedObjects[leftObject].set_KalmanEstimation()
-            #print(LeftTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-            LeftTrackedObjects.list_40TrackedObjects[leftObject].set_AssocClusters(dynLClus)
+        for leftObject in range(len(LeftTrackedObjects.l_40TrackedObjs)):
+            LeftTrackedObjects.l_40TrackedObjs[leftObject].set_KalmanEstimation()
+            #print(LeftTrackedObjects.l_40TrackedObjs[0].f_Kalman.X)
+            LeftTrackedObjects.l_40TrackedObjs[leftObject].set_AssocClusters(dynLClus)
     
-    #LeftTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
+    #LeftTrackedObjects.l_40TrackedObjs[0].set_KalmanCorrection()
 
-    if len(RightTrackedObjects.list_40TrackedObjects) > 0:
+    if len(RightTrackedObjects.l_40TrackedObjs) > 0:
 
         #print(RightTrackedObjects.TRACKEDCOUNTER)
         #print("RightTrackedObjects kalman:" + str(sample))
-        for rightObject in range(len (RightTrackedObjects.list_40TrackedObjects)):
-            RightTrackedObjects.list_40TrackedObjects[rightObject].set_KalmanEstimation()
-            #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
-            RightTrackedObjects.list_40TrackedObjects[rightObject].set_AssocClusters(dynRClus)
-            #RightTrackedObjects.list_40TrackedObjects[0].set_KalmanCorrection()
-        #print(RightTrackedObjects.list_40TrackedObjects[0].f_Kalman.X)
+        for rightObject in range(len (RightTrackedObjects.l_40TrackedObjs)):
+            RightTrackedObjects.l_40TrackedObjs[rightObject].set_KalmanEstimation()
+            #print(RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.X)
+            RightTrackedObjects.l_40TrackedObjs[rightObject].set_AssocClusters(dynRClus)
+            #RightTrackedObjects.l_40TrackedObjs[0].set_KalmanCorrection()
+        #print(RightTrackedObjects.l_40TrackedObjs[0].f_Kalman.X)
     return [RightTrackedObjects, LeftTrackedObjects]
 
     # [sorteda, sortedb] = FunctionCreateObjects(valLeftClusters, valRightClusters)
